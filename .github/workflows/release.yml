@@ -1,0 +1,55 @@
+name: Portable Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  portable-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build portable zip
+        run: npm run package:portable
+
+      - name: Write release notes
+        run: |
+          cat > release-notes.md <<'EOF'
+          Toodo 첫 피드백용 프리뷰 버전입니다.
+
+          사용 방법:
+          1. Toodo-portable.zip 다운로드
+          2. 압축 해제
+          3. index.html 실행
+
+          주의:
+          - 데이터는 브라우저 저장소에 저장됩니다.
+          - 중요한 데이터는 Export 기능으로 백업해주세요.
+          EOF
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 \
+            || gh release create "${GITHUB_REF_NAME}" \
+              --title "Toodo ${GITHUB_REF_NAME}" \
+              --notes-file release-notes.md \
+              --prerelease
+          gh release upload "${GITHUB_REF_NAME}" release/Toodo-portable.zip --clobber

@@ -1,0 +1,24 @@
+{
+  "name": "toodo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:portable": "tsc && vite build --base=./ --outDir release/Toodo/.vite-build && node scripts/build-portable.mjs",
+    "package:portable": "npm run build:portable && node scripts/package-portable.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10"
+  }
+}

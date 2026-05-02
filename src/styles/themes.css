@@ -1,0 +1,253 @@
+:root,
+:root[data-theme="dark-professional"] {
+  color-scheme: dark;
+  --theme-name: "Dark Professional";
+
+  --app-bg: #0f131a;
+  --app-bg-accent: radial-gradient(circle at 18% -10%, rgba(58, 118, 255, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 260px);
+  --surface-0: #111720;
+  --surface-1: #161d27;
+  --surface-2: #1b2430;
+  --surface-3: #232d3a;
+  --surface-hover: #202b38;
+  --surface-active: #283548;
+  --surface-selected: rgba(89, 143, 255, 0.12);
+  --surface-input: #101721;
+
+  --border-subtle: rgba(148, 163, 184, 0.16);
+  --border-strong: rgba(148, 163, 184, 0.28);
+  --border-focus: #7aa2ff;
+
+  --text-primary: #eef3f8;
+  --text-secondary: #bac6d4;
+  --text-muted: #8593a3;
+  --text-disabled: #5f6a76;
+  --text-inverse: #08101a;
+
+  --accent: #5e8eff;
+  --accent-hover: #79a4ff;
+  --accent-soft: rgba(94, 142, 255, 0.16);
+  --focus-ring: rgba(94, 142, 255, 0.38);
+
+  --success: #37c985;
+  --warning: #f2a642;
+  --danger: #ff6b7a;
+  --info: #5e8eff;
+
+  --status-planned-bg: rgba(94, 142, 255, 0.16);
+  --status-planned-text: #9eb9ff;
+  --status-planned-border: rgba(94, 142, 255, 0.46);
+  --status-active-bg: rgba(242, 166, 66, 0.16);
+  --status-active-text: #ffc374;
+  --status-active-border: rgba(242, 166, 66, 0.48);
+  --status-done-bg: rgba(55, 201, 133, 0.16);
+  --status-done-text: #8be4b9;
+  --status-done-border: rgba(55, 201, 133, 0.44);
+
+  --priority-high-bg: rgba(47, 93, 212, 0.9);
+  --priority-high-text: #f7faff;
+  --priority-high-border: rgba(118, 158, 255, 0.68);
+  --priority-medium-bg: rgba(120, 134, 154, 0.22);
+  --priority-medium-text: #d5dce6;
+  --priority-medium-border: rgba(148, 163, 184, 0.34);
+  --priority-low-bg: rgba(148, 163, 184, 0.15);
+  --priority-low-text: #b6c1ce;
+  --priority-low-border: rgba(148, 163, 184, 0.24);
+
+  --gantt-grid-line: rgba(148, 163, 184, 0.13);
+  --gantt-weekend: rgba(255, 255, 255, 0.025);
+  --today-highlight: rgba(255, 208, 0, 0.115);
+  --today-line: rgba(255, 218, 77, 0.58);
+  --today-text: #ffe68b;
+  --memo-bg: rgba(255, 214, 76, 0.16);
+  --memo-bg-hover: rgba(255, 214, 76, 0.27);
+  --memo-border: rgba(255, 214, 76, 0.54);
+  --memo-text: #ffe69c;
+  --exclusion-yellow-bg: rgba(255, 214, 76, 0.105);
+  --exclusion-yellow-line: rgba(255, 214, 76, 0.28);
+  --exclusion-blue-bg: rgba(94, 142, 255, 0.095);
+  --exclusion-blue-line: rgba(94, 142, 255, 0.24);
+  --exclusion-gray-bg: rgba(148, 163, 184, 0.09);
+  --exclusion-gray-line: rgba(148, 163, 184, 0.22);
+  --exclusion-red-bg: rgba(255, 107, 122, 0.09);
+  --exclusion-red-line: rgba(255, 107, 122, 0.24);
+
+  --scrollbar-track: rgba(0, 0, 0, 0.14);
+  --scrollbar-thumb: rgba(148, 163, 184, 0.34);
+  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.52);
+}
+
+:root[data-theme="light-professional"] {
+  color-scheme: light;
+  --theme-name: "Light Professional";
+
+  --app-bg: #f3f6fa;
+  --app-bg-accent: radial-gradient(circle at 20% -10%, rgba(39, 96, 221, 0.09), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), transparent 260px);
+  --surface-0: #f8fafc;
+  --surface-1: #ffffff;
+  --surface-2: #f4f7fb;
+  --surface-3: #eaf0f7;
+  --surface-hover: #edf3fb;
+  --surface-active: #e4edf8;
+  --surface-selected: rgba(37, 99, 235, 0.08);
+  --surface-input: #ffffff;
+
+  --border-subtle: rgba(31, 41, 55, 0.1);
+  --border-strong: rgba(31, 41, 55, 0.16);
+  --border-focus: #2563eb;
+
+  --text-primary: #172033;
+  --text-secondary: #405064;
+  --text-muted: #6f7f91;
+  --text-disabled: #a5b0bd;
+  --text-inverse: #ffffff;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: rgba(37, 99, 235, 0.1);
+  --focus-ring: rgba(37, 99, 235, 0.28);
+
+  --success: #0f9f68;
+  --warning: #d97706;
+  --danger: #dc3545;
+  --info: #2563eb;
+
+  --status-planned-bg: rgba(37, 99, 235, 0.1);
+  --status-planned-text: #1d4ed8;
+  --status-planned-border: rgba(37, 99, 235, 0.26);
+  --status-active-bg: rgba(217, 119, 6, 0.12);
+  --status-active-text: #9a5a00;
+  --status-active-border: rgba(217, 119, 6, 0.3);
+  --status-done-bg: rgba(15, 159, 104, 0.11);
+  --status-done-text: #05734c;
+  --status-done-border: rgba(15, 159, 104, 0.28);
+
+  --priority-high-bg: #1d4ed8;
+  --priority-high-text: #ffffff;
+  --priority-high-border: rgba(29, 78, 216, 0.38);
+  --priority-medium-bg: #eef2f7;
+  --priority-medium-text: #475569;
+  --priority-medium-border: #d7dee8;
+  --priority-low-bg: #f7f9fc;
+  --priority-low-text: #64748b;
+  --priority-low-border: #e2e8f0;
+
+  --gantt-grid-line: rgba(31, 41, 55, 0.1);
+  --gantt-weekend: rgba(15, 23, 42, 0.035);
+  --today-highlight: rgba(250, 204, 21, 0.18);
+  --today-line: rgba(202, 138, 4, 0.55);
+  --today-text: #7c5600;
+  --memo-bg: rgba(250, 204, 21, 0.2);
+  --memo-bg-hover: rgba(250, 204, 21, 0.32);
+  --memo-border: rgba(202, 138, 4, 0.48);
+  --memo-text: #7c5600;
+  --exclusion-yellow-bg: rgba(250, 204, 21, 0.15);
+  --exclusion-yellow-line: rgba(202, 138, 4, 0.28);
+  --exclusion-blue-bg: rgba(37, 99, 235, 0.085);
+  --exclusion-blue-line: rgba(37, 99, 235, 0.2);
+  --exclusion-gray-bg: rgba(100, 116, 139, 0.09);
+  --exclusion-gray-line: rgba(100, 116, 139, 0.2);
+  --exclusion-red-bg: rgba(220, 53, 69, 0.08);
+  --exclusion-red-line: rgba(220, 53, 69, 0.22);
+
+  --scrollbar-track: rgba(31, 41, 55, 0.06);
+  --scrollbar-thumb: rgba(100, 116, 139, 0.32);
+  --scrollbar-thumb-hover: rgba(100, 116, 139, 0.5);
+}
+
+:root[data-theme="midnight-blue"] {
+  color-scheme: dark;
+  --theme-name: "Midnight Blue";
+
+  --app-bg: #080d18;
+  --app-bg-accent: radial-gradient(circle at 18% -12%, rgba(44, 123, 229, 0.2), transparent 38%),
+    linear-gradient(180deg, rgba(82, 125, 255, 0.07), transparent 300px);
+  --surface-0: #0b1220;
+  --surface-1: #101a2d;
+  --surface-2: #14223a;
+  --surface-3: #1a2a45;
+  --surface-hover: #182846;
+  --surface-active: #213457;
+  --surface-selected: rgba(34, 211, 238, 0.1);
+  --surface-input: #0b1425;
+
+  --border-subtle: rgba(125, 161, 207, 0.15);
+  --border-strong: rgba(125, 161, 207, 0.28);
+  --border-focus: #3dd7f5;
+
+  --text-primary: #edf7ff;
+  --text-secondary: #b7c9de;
+  --text-muted: #7d93ad;
+  --text-disabled: #51647d;
+  --text-inverse: #07101d;
+
+  --accent: #22d3ee;
+  --accent-hover: #67e8f9;
+  --accent-soft: rgba(34, 211, 238, 0.14);
+  --focus-ring: rgba(34, 211, 238, 0.32);
+
+  --success: #42d392;
+  --warning: #f6b84d;
+  --danger: #ff6f91;
+  --info: #55a7ff;
+
+  --status-planned-bg: rgba(85, 167, 255, 0.14);
+  --status-planned-text: #9fcbff;
+  --status-planned-border: rgba(85, 167, 255, 0.44);
+  --status-active-bg: rgba(246, 184, 77, 0.15);
+  --status-active-text: #ffd08a;
+  --status-active-border: rgba(246, 184, 77, 0.45);
+  --status-done-bg: rgba(66, 211, 146, 0.14);
+  --status-done-text: #93ebc3;
+  --status-done-border: rgba(66, 211, 146, 0.42);
+
+  --priority-high-bg: rgba(41, 121, 255, 0.9);
+  --priority-high-text: #f5fbff;
+  --priority-high-border: rgba(103, 232, 249, 0.5);
+  --priority-medium-bg: rgba(125, 147, 173, 0.18);
+  --priority-medium-text: #c6d4e5;
+  --priority-medium-border: rgba(125, 147, 173, 0.31);
+  --priority-low-bg: rgba(125, 147, 173, 0.11);
+  --priority-low-text: #aabbd0;
+  --priority-low-border: rgba(125, 147, 173, 0.22);
+
+  --gantt-grid-line: rgba(125, 161, 207, 0.13);
+  --gantt-weekend: rgba(125, 161, 207, 0.035);
+  --today-highlight: rgba(255, 208, 0, 0.12);
+  --today-line: rgba(255, 226, 112, 0.56);
+  --today-text: #ffedaa;
+  --memo-bg: rgba(255, 222, 86, 0.16);
+  --memo-bg-hover: rgba(255, 222, 86, 0.28);
+  --memo-border: rgba(255, 222, 86, 0.56);
+  --memo-text: #ffec9f;
+  --exclusion-yellow-bg: rgba(255, 222, 86, 0.11);
+  --exclusion-yellow-line: rgba(255, 222, 86, 0.28);
+  --exclusion-blue-bg: rgba(85, 167, 255, 0.1);
+  --exclusion-blue-line: rgba(85, 167, 255, 0.25);
+  --exclusion-gray-bg: rgba(125, 147, 173, 0.095);
+  --exclusion-gray-line: rgba(125, 147, 173, 0.23);
+  --exclusion-red-bg: rgba(255, 111, 145, 0.09);
+  --exclusion-red-line: rgba(255, 111, 145, 0.23);
+
+  --scrollbar-track: rgba(0, 0, 0, 0.18);
+  --scrollbar-thumb: rgba(125, 161, 207, 0.32);
+  --scrollbar-thumb-hover: rgba(125, 161, 207, 0.52);
+}
+
+:root {
+  --bg: var(--app-bg);
+  --panel: var(--surface-1);
+  --panel-2: var(--surface-2);
+  --panel-3: var(--surface-3);
+  --border: var(--border-strong);
+  --border-soft: var(--border-subtle);
+  --text: var(--text-primary);
+  --blue: var(--info);
+  --blue-soft: var(--status-planned-bg);
+  --orange: var(--warning);
+  --orange-soft: var(--status-active-bg);
+  --green: var(--success);
+  --green-soft: var(--status-done-bg);
+}

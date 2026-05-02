@@ -1,0 +1,58 @@
+:root {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  --font-sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-tabular: "SF Mono", "Segoe UI Mono", "Roboto Mono", ui-monospace, monospace;
+
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-lg: 15px;
+  --text-xl: 18px;
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.45;
+
+  --space-1: 4px;
+  --space-2: 6px;
+  --space-3: 8px;
+  --space-4: 10px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 20px;
+  --space-8: 24px;
+  --space-9: 32px;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  --control-height-xs: 24px;
+  --control-height-sm: 28px;
+  --control-height-md: 32px;
+  --row-height: 36px;
+  --gantt-day-width: 32px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.16);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.24);
+  --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.34);
+
+  --transition-fast: 110ms ease;
+  --transition-base: 160ms ease;
+
+  --z-nav: 20;
+  --z-resize: 8;
+  --z-grid-overlay: 1;
+  --z-exclusion-layer: 1;
+  --z-today-layer: 2;
+  --z-gantt-bar: 4;
+  --z-memo-marker: 6;
+  --z-tooltip: 1300;
+  --z-popover: 1250;
+}
