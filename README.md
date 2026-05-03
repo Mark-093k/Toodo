@@ -1,94 +1,114 @@
 # Toodo
 
-로컬에서 실행하는 Todo + Gantt 일정 관리 앱입니다.
+Toodo is a local Todo + Gantt schedule manager for project work.
 
-Toodo는 두 가지 방식으로 사용할 수 있습니다.
+It is available in two formats:
 
-- **Desktop 버전**: 설치형 앱입니다. 업무 데이터가 브라우저 캐시가 아니라 OS의 로컬 데이터 폴더에 JSON 파일로 저장됩니다.
-- **Portable HTML 버전**: 설치 없이 `index.html`을 더블클릭해서 실행합니다. 데이터는 브라우저 저장소에 저장됩니다.
+- **Desktop app**: installed on Windows. Data is saved as JSON files in the OS app data directory, not in browser cache.
+- **Portable HTML app**: no installation. Open `index.html` directly in Chrome or Edge. Data is saved in browser storage.
 
-## 다운로드
+## Download
 
-현재 피드백용 배포 파일은 아래 Release에서 받을 수 있습니다.
+Download the latest preview release from GitHub Releases:
 
-https://github.com/Mark-093k/Toodo/releases/tag/v0.1.0-feedback
+https://github.com/Mark-093k/Toodo/releases
 
-직접 다운로드:
+Direct portable preview download:
 
-- Portable HTML 버전: [Toodo-portable.zip](https://github.com/Mark-093k/Toodo/releases/download/v0.1.0-feedback/Toodo-portable.zip)
-- Windows Desktop 버전: Release assets의 `Toodo-desktop-windows-...exe` 또는 `...msi` 파일
+https://github.com/Mark-093k/Toodo/releases/download/v0.1.0-feedback/Toodo-portable.zip
 
-## Desktop 버전 사용 방법
+Desktop preview builds appear in the release assets as files named like:
 
-1. Release에서 Windows Desktop 설치 파일을 다운로드합니다.
-2. 설치 파일을 실행해서 Toodo를 설치합니다.
-3. Toodo를 실행하면 바로 사용할 수 있습니다.
+- `Toodo-desktop-windows-x64-v...-setup.exe`
+- `Toodo-desktop-windows-x64-v...-msi.msi`
 
-Desktop 버전은 데이터를 로컬 데이터 폴더에 저장합니다.
+## Which Version Should I Use?
 
-예상 저장 위치:
+Use the **Desktop app** for real work data.
 
-- Windows: 사용자 AppData 하위 Toodo 데이터 폴더
-- macOS: Application Support 하위 Toodo 데이터 폴더
-- Linux: XDG data directory 하위 Toodo 데이터 폴더
+Desktop data is stored in local JSON files under your user app data folder. It is not removed when browser cache or site data is cleared.
 
-앱 상단의 `Data Folder` 버튼으로 실제 데이터 폴더를 열 수 있습니다.
+Use the **Portable HTML app** for quick testing or sharing a lightweight preview.
 
-## Portable HTML 버전 사용 방법
+Portable data is stored by the browser. If browser storage is cleared, the data can be lost.
 
-1. `Toodo-portable.zip`을 다운로드합니다.
-2. 압축을 해제합니다.
-3. 폴더 안의 `index.html`을 더블클릭합니다.
-4. 브라우저에서 앱이 열리면 바로 사용합니다.
+## Desktop App Usage
 
-Node.js, npm, 개발환경 설치가 필요 없습니다.
+1. Download the Windows desktop installer from GitHub Releases.
+2. Run the installer.
+3. Launch Toodo.
+4. Use the `Data Folder` button in the app to open the folder where data is stored.
 
-권장 브라우저는 Chrome 또는 Edge입니다.
+Desktop data is stored in this structure:
 
-## 데이터 저장 안내
+```text
+ToodoData/
+  meta.json
+  years/
+    2026.json
+    2027.json
+  backups/
+```
 
-Desktop 버전:
+The exact base folder depends on your operating system:
 
-- `meta.json`
-- `years/{year}.json`
-- `backups/*.json`
+- Windows: user AppData directory
+- macOS: Application Support directory
+- Linux: XDG data directory
 
-형태로 OS app data directory에 저장됩니다. 브라우저 캐시 삭제와 무관하게 유지됩니다.
+## Portable HTML Usage
 
-Portable HTML 버전:
+1. Download `Toodo-portable.zip`.
+2. Extract the zip file.
+3. Open `Toodo/index.html` by double-clicking it.
+4. Use Chrome or Edge.
 
-- 브라우저 IndexedDB 또는 localStorage에 저장됩니다.
-- 브라우저 캐시나 사이트 저장소를 삭제하면 데이터가 사라질 수 있습니다.
-- 중요한 데이터는 앱의 Export 기능으로 백업해주세요.
+Node.js, npm, and a development environment are not required.
 
-## Portable에서 Desktop으로 데이터 옮기기
+## Data Backup
 
-1. 기존 Portable Toodo를 엽니다.
-2. `Export All`을 실행해서 전체 데이터 JSON을 저장합니다.
-3. Desktop Toodo를 설치하고 실행합니다.
-4. Desktop Toodo에서 `Import All`로 백업 JSON을 가져옵니다.
-5. 이후 데이터는 Desktop 앱의 로컬 데이터 폴더에 저장됩니다.
+Toodo includes Export and Import features.
 
-## 주요 기능
+Use these regularly if your data is important:
 
-- Main Table 기반 Todo 관리
-- Gantt View 일정 확인
-- Task별 날짜 메모
-- 연도별 데이터 분리
-- 프로젝트 제외기간 설정
-- 미정 일정 점선 표시
-- 테마 변경
-- 현재 연도 / 전체 연도 Export, Import 백업
-- Desktop 버전 데이터 폴더 열기 및 현재 연도 백업
+- `Export Year`: export the currently selected year.
+- `Export All`: export all years.
+- `Import Year`: restore one yearly workspace.
+- `Import All`: restore all yearly workspaces.
 
-## 피드백
+For the portable app, backups are especially important because browser storage can be removed by browser cleanup tools.
 
-사용 중 불편한 점이나 개선 의견은 아래에 남겨주세요.
+## Move Data From Portable to Desktop
+
+1. Open the existing portable Toodo app.
+2. Click `Export All`.
+3. Install and open the desktop Toodo app.
+4. Click `Import All`.
+5. Select the JSON file exported from the portable app.
+
+After import, the desktop app stores future changes in its local data folder.
+
+## Main Features
+
+- Editable Todo table
+- Gantt view
+- Task daily memos
+- Yearly workspaces
+- Project exclusion periods
+- Tentative schedule display with dashed Gantt bars
+- Theme switching
+- Gantt left panel resizing
+- Export / Import backup
+- Desktop file-based storage
+
+## Feedback
+
+Please report feedback or issues here:
 
 https://github.com/Mark-093k/Toodo/issues
 
-## 개발자 문서
+## Developer Docs
 
-소스 실행, 빌드, release 생성 방법은 [DEVELOPER.md](./DEVELOPER.md)를 참고해주세요.
+Development, build, release, and storage details are documented in [DEVELOPER.md](./DEVELOPER.md).
 
-코드 서명과 notarization 준비는 [SIGNING.md](./SIGNING.md)를 참고해주세요.
+Code signing preparation is documented in [SIGNING.md](./SIGNING.md).

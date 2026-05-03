@@ -1,160 +1,116 @@
 # Toodo Developer Guide
 
-이 문서는 Toodo를 개발하거나 portable/desktop release를 생성하는 개발자용 안내입니다.
+This document is for developers who want to run, build, or package Toodo.
 
-## 개발 환경
+The public README is intentionally user-focused. Keep detailed developer commands here.
 
-공통:
+## Requirements
 
-- Node.js 20 이상 권장
+Common requirements:
+
+- Node.js 20 or newer
 - npm
-- Chrome 또는 Edge
+- Chrome or Edge for manual browser checks
 
-Desktop 빌드:
+Desktop build requirements:
 
 - Rust stable toolchain
-- Tauri 2.x CLI (`@tauri-apps/cli`)
-- Windows installer 빌드 시 Windows 환경 권장
+- Tauri 2.x CLI through `@tauri-apps/cli`
+- Windows for Windows installer builds
 
-현재 npm 패키지:
-
-- `@tauri-apps/api`
-- `@tauri-apps/cli`
-- React
-- Vite
-- TypeScript
-
-## 설치
+## Install
 
 ```bash
 npm install
 ```
 
-## 브라우저 개발 서버
+## Browser Development
 
 ```bash
 npm run dev
 ```
 
-## Desktop 개발 실행
-
-```bash
-npm run dev:desktop
-```
-
-Tauri가 Vite dev server를 실행하고 desktop WebView를 띄웁니다.
-
-## 브라우저 프로덕션 빌드
+## Production Browser Build
 
 ```bash
 npm run build
 ```
 
-## Portable HTML 빌드
+## Portable HTML Build
 
 ```bash
 npm run build:portable
+npm run package:portable
 ```
 
-결과:
+Output:
 
 ```text
 release/
   Toodo/
     index.html
     README_USER.txt
-```
-
-## Portable zip 생성
-
-```bash
-npm run package:portable
-```
-
-결과:
-
-```text
-release/
   Toodo-portable.zip
 ```
 
-zip 내부 구조:
+The portable app is designed to work from `file://`.
 
-```text
-Toodo/
-  index.html
-  README_USER.txt
+## Desktop Development
+
+```bash
+npm run dev:desktop
 ```
 
-## Desktop installer 빌드
+This starts the Vite dev server and opens the Tauri shell.
+
+## Desktop Build
 
 ```bash
 npm run build:desktop
-```
-
-Release asset용 파일명으로 복사하려면:
-
-```bash
 npm run package:desktop
 ```
 
-결과 예시:
+`package:desktop` runs the Tauri build and then copies installer artifacts into `release/`.
+
+Expected Windows outputs:
 
 ```text
 release/
-  Toodo-desktop-windows-x64-v0.2.0-setup.exe
-  Toodo-desktop-windows-x64-v0.2.0-msi.msi
+  Toodo-desktop-windows-x64-v<version>-setup.exe
+  Toodo-desktop-windows-x64-v<version>-msi.msi
+  README_DESKTOP_USER.txt
 ```
 
-Rust toolchain이 설치되어 있지 않으면 desktop 빌드는 실패합니다. 일반 사용자는 Rust나 Node.js가 필요하지 않고, Release의 installer만 다운로드하면 됩니다.
-
-## Tauri 구조
+## Project Structure
 
 ```text
+src/
+  components/
+  storage/
+  store/
+  styles/
 src-tauri/
-  Cargo.toml
-  build.rs
+  src/main.rs
   tauri.conf.json
-  capabilities/
-    default.json
-  src/
-    main.rs
+scripts/
+  build-portable.mjs
+  package-portable.mjs
+  package-desktop.mjs
+  sign-windows.ps1
 ```
 
-Tauri 설정:
+## Storage Architecture
 
-- `beforeDevCommand`: `npm run dev -- --host 127.0.0.1`
-- `devUrl`: `http://127.0.0.1:5173`
-- `beforeBuildCommand`: `npm run build`
-- `frontendDist`: `../dist`
-- Windows bundle target: `nsis`, `msi`
+The app uses a storage adapter layer.
 
-## Storage adapter 구조
+- Browser / portable app: IndexedDB first, localStorage fallback.
+- Desktop app: Tauri commands backed by JSON files on the local file system.
 
-React 컴포넌트는 브라우저 저장소나 Tauri API를 직접 다루지 않습니다.
+React code should not directly depend on localStorage or Tauri APIs. Use the storage adapter APIs instead.
 
-```text
-src/storage/
-  appStorage.ts
-  indexedDbStorage.ts
-  localStorageFallback.ts
-  desktopFileStorage.ts
-  types.ts
-```
+## Desktop Data Layout
 
-Adapter:
-
-- Browser: IndexedDB 우선, 실패 시 localStorage fallback
-- Desktop: Tauri command를 통한 JSON file storage
-
-Runtime 감지:
-
-- Tauri runtime이면 `desktopFileStorage`
-- 브라우저/portable이면 `indexedDbStorage` 또는 `localStorageFallback`
-
-## Desktop file storage 구조
-
-Desktop 버전은 OS app data directory 아래에 실제 JSON 파일을 저장합니다.
+The desktop app stores data under the OS app data directory:
 
 ```text
 ToodoData/
@@ -163,19 +119,13 @@ ToodoData/
     2026.json
     2027.json
   backups/
-    2026-20260503-153000.json
 ```
 
-규칙:
+The app loads `meta.json` first, then only the active year file. This keeps startup work small as more years accumulate.
 
-- 앱 시작 시 `meta.json`을 먼저 로드합니다.
-- active year에 해당하는 `years/{year}.json`만 로드합니다.
-- 연도 전환 시 현재 연도를 저장한 뒤 다음 연도 JSON을 로드합니다.
-- Task, TaskDailyMemo, ProjectExclusion은 현재 active year JSON에만 저장됩니다.
+## Tauri Commands
 
-## Desktop Tauri commands
-
-`src-tauri/src/main.rs`에 다음 command가 있습니다.
+Implemented in `src-tauri/src/main.rs`:
 
 - `ensure_data_dir`
 - `get_data_dir_path`
@@ -191,47 +141,30 @@ ToodoData/
 - `export_year_data`
 - `import_year_data`
 
-JSON 저장은 임시 파일에 먼저 쓴 뒤 기존 파일을 교체하는 방식으로 파일 손상 가능성을 줄입니다.
+Writes use a temporary file and then replace the target JSON file to reduce the chance of partial writes.
 
-## 데이터 마이그레이션
+## Release Workflow
 
-누락 필드는 앱 storage normalization에서 보정합니다.
+The GitHub Actions workflow is in:
 
-- `Task.scheduleCertainty`: `fixed`
-- `YearlyWorkspaceData.projectExclusions`: `[]`
-- `createdAt`: 없으면 `updatedAt` 또는 현재 시각
-
-Portable에서 Desktop으로 옮길 때는 Portable 앱에서 `Export All` 후 Desktop 앱에서 `Import All`을 사용합니다.
-
-## GitHub Release
-
-수동 portable release:
-
-```bash
-npm run package:portable
+```text
+.github/workflows/release.yml
 ```
 
-수동 desktop release:
+On tag push, it builds:
 
-```bash
-npm run package:desktop
-```
+- portable zip on Ubuntu
+- Windows desktop installer on Windows
 
-GitHub Actions:
-
-`.github/workflows/release.yml`은 `v*` tag가 push되면 다음을 시도합니다.
-
-- Ubuntu에서 portable zip 생성 및 업로드
-- Windows에서 desktop installer 생성 및 업로드
-- signing secret이 없으면 unsigned preview build로 진행
-
-예:
+Create a preview tag:
 
 ```bash
 git tag v0.2.0-desktop-preview
 git push origin v0.2.0-desktop-preview
 ```
 
-## Code signing
+Do not commit `dist/`, `release/`, `node_modules/`, or signing certificates.
 
-Windows/macOS signing 준비는 [SIGNING.md](./SIGNING.md)를 참고하세요.
+## Signing
+
+See [SIGNING.md](./SIGNING.md).

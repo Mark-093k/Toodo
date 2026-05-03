@@ -1,27 +1,36 @@
-Toodo Desktop 사용자 안내
+Toodo Desktop User Guide
 
-실행 방법
-- GitHub Release에서 Windows Desktop 설치 파일을 다운로드합니다.
-- 설치 파일을 실행한 뒤 Toodo를 실행하세요.
-- Node.js, npm, Rust 설치가 필요하지 않습니다.
+How to run
+- Download the Windows desktop installer from GitHub Releases.
+- Run the installer.
+- Open Toodo from the Start menu or desktop shortcut.
+- Node.js, npm, and Rust are not required for users.
 
-데이터 저장
-- Desktop 버전은 데이터를 브라우저 캐시가 아니라 로컬 데이터 폴더의 JSON 파일에 저장합니다.
-- 앱 상단의 Data Folder 버튼을 누르면 실제 데이터 폴더를 열 수 있습니다.
-- 기본 구조는 meta.json, years/{year}.json, backups/ 입니다.
+Where data is stored
+- The desktop app stores data as JSON files in a local app data folder.
+- It does not store work data in browser cache.
+- Use the Data Folder button in the app to open the exact folder.
 
-백업 / 복원
-- Export Year 버튼으로 현재 연도 데이터를 JSON 파일로 백업할 수 있습니다.
-- Export All 버튼으로 전체 연도 데이터를 JSON 파일로 백업할 수 있습니다.
-- Backup Year 버튼은 현재 연도 JSON을 데이터 폴더의 backups/ 폴더에 복사합니다.
-- Import Year / Import All 버튼으로 백업 JSON 파일을 다시 가져올 수 있습니다.
+Default structure
+- meta.json
+- years/{year}.json
+- backups/
 
-Portable에서 Desktop으로 데이터 옮기기
-- 기존 portable Toodo에서 Export All을 실행합니다.
-- Desktop Toodo를 실행합니다.
-- Import All로 portable에서 만든 JSON 파일을 가져옵니다.
-- 이후 데이터는 Desktop 앱의 로컬 데이터 폴더에 저장됩니다.
+Backup and restore
+- Export Year saves the current year as a JSON backup file.
+- Export All saves all yearly workspaces as one JSON backup file.
+- Backup Year copies the current year JSON into the backups folder.
+- Import Year and Import All restore exported JSON backup files.
 
-주의
-- 데이터 폴더의 JSON 파일을 직접 편집하기 전에 반드시 백업하세요.
-- 앱 실행 중 JSON 파일을 외부 프로그램으로 수정하면 저장 충돌이 날 수 있습니다.
+Move data from Portable to Desktop
+- Open the portable Toodo app.
+- Click Export All.
+- Open the desktop Toodo app.
+- Click Import All.
+- Select the exported JSON file.
+- Future changes will be stored in the desktop app data folder.
+
+Notes
+- Back up important data regularly.
+- Avoid manually editing JSON files while the app is open.
+- If you need to move data to another PC, use Export All and Import All.

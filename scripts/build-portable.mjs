@@ -32,27 +32,28 @@ await mkdir(releaseDir, { recursive: true });
 await writeFile(outputHtmlPath, html, 'utf8');
 await writeFile(
   userReadmePath,
-  `Toodo 사용자 안내
+  `Toodo Portable User Guide
 
-실행 방법
-- 이 폴더의 index.html 파일을 더블클릭해서 실행하세요.
-- Node.js, npm install, npm run dev가 필요하지 않습니다.
-- 권장 브라우저는 Chrome 또는 Edge입니다.
+How to run
+- Open index.html by double-clicking it.
+- Node.js, npm install, and npm run dev are not required.
+- Chrome or Edge is recommended.
 
-데이터 저장
-- 데이터는 현재 브라우저 저장소(IndexedDB, 필요 시 localStorage)에 저장됩니다.
-- 이 폴더 안의 파일에 자동으로 저장되는 방식은 아닙니다.
-- 브라우저 저장소를 삭제하거나 다른 브라우저/PC로 이동하면 데이터가 보이지 않을 수 있습니다.
+Where data is stored
+- Portable data is stored in the current browser storage area, using IndexedDB or localStorage.
+- Data is not written automatically to files inside this folder.
+- If browser storage is cleared, the data can be lost.
+- If you open the app in another browser or on another PC, the data will not appear automatically.
 
-백업 / 복원
-- 상단의 Export Year 버튼으로 현재 연도 데이터를 JSON 파일로 백업할 수 있습니다.
-- Export All 버튼으로 전체 연도 데이터를 JSON 파일로 백업할 수 있습니다.
-- 다른 PC로 옮기거나 중요한 작업을 보관하려면 Export 기능으로 백업 파일을 만들어주세요.
-- Import Year / Import All 버튼으로 백업 JSON 파일을 다시 가져올 수 있습니다.
+Backup and restore
+- Export Year saves the current year as a JSON backup file.
+- Export All saves all yearly workspaces as one JSON backup file.
+- Import Year and Import All restore exported JSON backup files.
+- Use Export before moving data to another PC.
 
-주의
-- 브라우저 캐시나 사이트 데이터 저장소를 삭제하면 앱 데이터가 사라질 수 있습니다.
-- 중요한 데이터는 정기적으로 Export 기능으로 백업해주세요.
+Notes
+- Keep regular backups for important data.
+- The desktop app is recommended for real work data because it stores data as local JSON files.
 `,
   'utf8',
 );
