@@ -1,4 +1,3 @@
-import { sampleTasks } from '../data/sampleTasks';
 import type {
   AllYearsBackup,
   AppMeta,
@@ -14,7 +13,7 @@ import { indexedDbStorage } from './indexedDbStorage';
 import { getYearStorageKey, localStorageFallback, META_STORAGE_KEY } from './localStorageFallback';
 import type { YearlyStorageDriver } from './types';
 
-export const APP_VERSION = '0.2.0';
+export const APP_VERSION = '0.2.2';
 export const APP_SCHEMA_VERSION = 4;
 export const YEARLY_SCHEMA_VERSION = 4;
 export const LEGACY_TASK_STORAGE_KEY = 'toodo.tasks.v1';
@@ -263,7 +262,7 @@ export const createYearData = (
 
 const createInitialWorkspace = async (driver: YearlyStorageDriver) => {
   const activeYear = getCurrentYear();
-  const data = createYearData(activeYear, sampleTasks);
+  const data = createEmptyYearData(activeYear);
   const meta = createMeta(activeYear, [activeYear]);
   await driver.saveYearData(activeYear, data);
   await driver.saveMeta(meta);
