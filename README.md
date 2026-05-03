@@ -13,14 +13,11 @@ Download the latest preview release from GitHub Releases:
 
 https://github.com/Mark-093k/Toodo/releases
 
-Direct portable preview download:
+Direct preview downloads:
 
-https://github.com/Mark-093k/Toodo/releases/download/v0.1.0-feedback/Toodo-portable.zip
-
-Desktop preview builds appear in the release assets as files named like:
-
-- `Toodo-desktop-windows-x64-v...-setup.exe`
-- `Toodo-desktop-windows-x64-v...-msi.msi`
+- Windows desktop installer: https://github.com/Mark-093k/Toodo/releases/download/v0.2.1-desktop-preview/Toodo-desktop-windows-x64-v0.2.1-setup.exe
+- Windows desktop MSI: https://github.com/Mark-093k/Toodo/releases/download/v0.2.1-desktop-preview/Toodo-desktop-windows-x64-v0.2.1-msi.msi
+- Portable HTML zip: https://github.com/Mark-093k/Toodo/releases/download/v0.2.1-desktop-preview/Toodo-portable.zip
 
 ## Which Version Should I Use?
 
