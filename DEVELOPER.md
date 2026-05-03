@@ -63,6 +63,8 @@ npm run dev:desktop
 
 This starts the Vite dev server and opens the Tauri shell.
 
+`dev:desktop` is a development mode. It is attached to the terminal process so logs are visible. Closing that terminal can close the app.
+
 ## Desktop Build
 
 ```bash
@@ -71,6 +73,14 @@ npm run package:desktop
 ```
 
 `package:desktop` runs the Tauri build and then copies installer artifacts into `release/`.
+
+Release desktop builds must run without a Windows CMD/console window. This is controlled in `src-tauri/src/main.rs` with:
+
+```rust
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+```
+
+The `not(debug_assertions)` guard keeps the console available for debug/dev builds while hiding it in release builds.
 
 Expected Windows outputs:
 

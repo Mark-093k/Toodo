@@ -5,6 +5,8 @@ How to run
 - Run the installer.
 - Open Toodo from the Start menu or desktop shortcut.
 - Node.js, npm, and Rust are not required for users.
+- Do not run `npm run dev:desktop`; that is only for developers.
+- The installed release app opens as a normal desktop window and does not show a CMD/console window.
 
 Where data is stored
 - The desktop app stores data as JSON files in a local app data folder.
@@ -34,3 +36,4 @@ Notes
 - Back up important data regularly.
 - Avoid manually editing JSON files while the app is open.
 - If you need to move data to another PC, use Export All and Import All.
+- In developer mode, closing the terminal can close the app. This does not apply to the installed release app.

@@ -15,9 +15,9 @@ https://github.com/Mark-093k/Toodo/releases
 
 Direct preview downloads:
 
-- Windows desktop installer: https://github.com/Mark-093k/Toodo/releases/download/v0.2.2-clean-preview/Toodo-desktop-windows-x64-v0.2.2-setup.exe
-- Windows desktop MSI: https://github.com/Mark-093k/Toodo/releases/download/v0.2.2-clean-preview/Toodo-desktop-windows-x64-v0.2.2-msi.msi
-- Portable HTML zip: https://github.com/Mark-093k/Toodo/releases/download/v0.2.2-clean-preview/Toodo-portable.zip
+- Windows desktop installer: https://github.com/Mark-093k/Toodo/releases/download/v0.2.3-console-hidden-preview/Toodo-desktop-windows-x64-v0.2.3-setup.exe
+- Windows desktop MSI: https://github.com/Mark-093k/Toodo/releases/download/v0.2.3-console-hidden-preview/Toodo-desktop-windows-x64-v0.2.3-msi.msi
+- Portable HTML zip: https://github.com/Mark-093k/Toodo/releases/download/v0.2.3-console-hidden-preview/Toodo-portable.zip
 
 ## Which Version Should I Use?
 

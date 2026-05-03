@@ -1,3 +1,5 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 use chrono::Local;
 use serde_json::{json, Value};
 use std::collections::BTreeSet;
