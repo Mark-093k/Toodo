@@ -59,10 +59,12 @@ export type ProjectExclusionPeriod = {
 
 export type AppMeta = {
   schemaVersion: number;
+  appVersion?: string;
   activeYear: number;
   years: number[];
   theme?: string;
   leftPanelWidth?: number;
+  createdAt?: string;
   updatedAt: string;
 };
 
@@ -72,6 +74,7 @@ export type YearlyWorkspaceData = {
   tasks: Task[];
   taskDailyMemos: TaskDailyMemo[];
   projectExclusions: ProjectExclusionPeriod[];
+  createdAt?: string;
   updatedAt: string;
 };
 

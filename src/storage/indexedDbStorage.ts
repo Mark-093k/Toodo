@@ -60,6 +60,7 @@ const withStore = async <T>(
 
 export const indexedDbStorage: YearlyStorageDriver = {
   name: 'indexedDB',
+  kind: 'browser',
 
   async loadMeta() {
     return withStore<AppMeta | undefined>(META_STORE, 'readonly', (store) => store.get('meta')).then(

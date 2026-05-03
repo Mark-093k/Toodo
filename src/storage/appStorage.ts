@@ -9,12 +9,14 @@ import type {
   YearlyWorkspaceData,
 } from '../types';
 import { THEME_STORAGE_KEY } from '../utils/theme';
+import { desktopFileStorage, isDesktopRuntime } from './desktopFileStorage';
 import { indexedDbStorage } from './indexedDbStorage';
 import { getYearStorageKey, localStorageFallback, META_STORAGE_KEY } from './localStorageFallback';
 import type { YearlyStorageDriver } from './types';
 
-export const APP_SCHEMA_VERSION = 3;
-export const YEARLY_SCHEMA_VERSION = 3;
+export const APP_VERSION = '0.2.0';
+export const APP_SCHEMA_VERSION = 4;
+export const YEARLY_SCHEMA_VERSION = 4;
 export const LEGACY_TASK_STORAGE_KEY = 'toodo.tasks.v1';
 export const LEGACY_TASK_DAILY_MEMO_STORAGE_KEY = 'gantt:taskDailyMemos';
 export const LEFT_PANEL_WIDTH_STORAGE_KEY = 'gantt:leftPanelWidth';
@@ -180,6 +182,7 @@ const normalizeYearlyWorkspaceData = (value: unknown): YearlyWorkspaceData | nul
     tasks,
     taskDailyMemos,
     projectExclusions,
+    createdAt: typeof data.createdAt === 'string' ? data.createdAt : data.updatedAt ?? new Date().toISOString(),
     updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString(),
   };
 };
@@ -208,7 +211,9 @@ const normalizeMeta = (value: unknown): AppMeta | null => {
   return {
     ...value,
     schemaVersion: APP_SCHEMA_VERSION,
+    appVersion: value.appVersion ?? APP_VERSION,
     years: sortYears(value.years),
+    createdAt: value.createdAt ?? value.updatedAt ?? new Date().toISOString(),
     updatedAt: value.updatedAt || new Date().toISOString(),
   };
 };
@@ -219,10 +224,12 @@ const createMeta = (activeYear: number, years: number[]): AppMeta => {
 
   return {
     schemaVersion: APP_SCHEMA_VERSION,
+    appVersion: APP_VERSION,
     activeYear,
     years: sortYears(years),
     theme,
     leftPanelWidth: Number.isFinite(storedPanelWidth) ? storedPanelWidth : undefined,
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 };
@@ -233,6 +240,7 @@ export const createEmptyYearData = (year: number): YearlyWorkspaceData => ({
   tasks: [],
   taskDailyMemos: [],
   projectExclusions: [],
+  createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 });
 
@@ -249,6 +257,7 @@ export const createYearData = (
   projectExclusions: projectExclusions
     .map(normalizeProjectExclusion)
     .filter((exclusion): exclusion is ProjectExclusionPeriod => exclusion !== null),
+  createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 });
 
@@ -307,6 +316,11 @@ const migrateLegacyData = async (driver: YearlyStorageDriver, legacyTasks: Task[
 };
 
 const resolveDriver = async (): Promise<YearlyStorageDriver> => {
+  if (isDesktopRuntime()) {
+    await desktopFileStorage.getDataDirPath?.();
+    return desktopFileStorage;
+  }
+
   try {
     await indexedDbStorage.listYears();
     return indexedDbStorage;
@@ -369,7 +383,9 @@ export const saveMeta = async (meta: AppMeta) => {
   await driver.saveMeta({
     ...meta,
     schemaVersion: APP_SCHEMA_VERSION,
+    appVersion: meta.appVersion ?? APP_VERSION,
     years: sortYears(meta.years),
+    createdAt: meta.createdAt ?? new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
 };
@@ -416,6 +432,31 @@ export const saveYearData = async (year: number, data: YearlyWorkspaceData) => {
   await driver.saveYearData(year, { ...normalizedData, updatedAt: new Date().toISOString() });
 };
 
+export const getStorageInfo = async () => {
+  const driver = await getStorageDriver();
+  return {
+    name: driver.name,
+    kind: driver.kind ?? 'browser',
+    dataDirPath: driver.getDataDirPath ? await driver.getDataDirPath() : null,
+  };
+};
+
+export const openDataDir = async () => {
+  const driver = await getStorageDriver();
+  if (!driver.openDataDir) {
+    throw new Error('Desktop 데이터 폴더 열기는 설치형 앱에서만 사용할 수 있습니다.');
+  }
+  await driver.openDataDir();
+};
+
+export const backupYearData = async (year: number) => {
+  const driver = await getStorageDriver();
+  if (!driver.backupYear) {
+    throw new Error('연도 백업 파일 생성은 설치형 앱에서만 사용할 수 있습니다.');
+  }
+  return driver.backupYear(year);
+};
+
 export const deleteYear = async (year: number) => {
   const driver = await getStorageDriver();
   const meta = await loadMeta();
@@ -456,6 +497,10 @@ export const importYear = async (json: string | YearlyWorkspaceData) => {
     throw new Error('올바른 연도 백업 파일이 아닙니다.');
   }
 
+  const driver = await getStorageDriver();
+  if (driver.backupYear && (await driver.loadYearData(normalizedData.year))) {
+    await driver.backupYear(normalizedData.year).catch(() => undefined);
+  }
   await saveYearData(normalizedData.year, normalizedData);
   return setActiveYear(normalizedData.year);
 };
@@ -485,6 +530,9 @@ export const importAllYears = async (json: string | AllYearsBackup) => {
 
   const driver = await getStorageDriver();
   const existingYears = await listYears();
+  if (driver.backupYear) {
+    await Promise.all(existingYears.map((existingYear) => driver.backupYear?.(existingYear).catch(() => undefined)));
+  }
   for (const existingYear of existingYears) {
     if (!years.includes(existingYear)) {
       await driver.deleteYear(existingYear);

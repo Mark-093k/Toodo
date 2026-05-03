@@ -1,0 +1,20 @@
+[package]
+name = "toodo"
+version = "0.2.0"
+description = "Toodo Desktop"
+authors = ["Toodo"]
+license = ""
+repository = "https://github.com/Mark-093k/Toodo"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+chrono = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2", features = [] }
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]

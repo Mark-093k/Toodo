@@ -1,5 +1,7 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useWorkspaceMeta, useWorkspaceStatus, workspaceStore } from '../store/workspaceStore';
+
+type StorageInfo = Awaited<ReturnType<typeof workspaceStore.getStorageInfo>>;
 
 const readFileAsText = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -25,7 +27,20 @@ export default function WorkspaceControls() {
   const yearImportRef = useRef<HTMLInputElement>(null);
   const allImportRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState('');
+  const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
   const isBusy = !isReady || isYearLoading;
+  const isDesktop = storageInfo?.kind === 'desktop';
+
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
+    workspaceStore
+      .getStorageInfo()
+      .then(setStorageInfo)
+      .catch(() => setStorageInfo(null));
+  }, [isReady]);
 
   const handleCreateYear = async () => {
     const defaultYear = String(new Date().getFullYear() + 1);
@@ -60,6 +75,32 @@ export default function WorkspaceControls() {
     setMessage('전체 연도 데이터를 내보냈습니다.');
   };
 
+  const handleSaveNow = async () => {
+    try {
+      await workspaceStore.saveNow();
+      setMessage('저장되었습니다.');
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : '저장에 실패했습니다.');
+    }
+  };
+
+  const handleOpenDataDir = async () => {
+    try {
+      await workspaceStore.openDataDir();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : '데이터 폴더를 열 수 없습니다.');
+    }
+  };
+
+  const handleBackupYear = async () => {
+    try {
+      const backupPath = await workspaceStore.backupCurrentYear();
+      setMessage(`백업 생성: ${backupPath}`);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : '백업 생성에 실패했습니다.');
+    }
+  };
+
   const handleImportYear = async (file?: File) => {
     if (!file) {
       return;
@@ -86,7 +127,7 @@ export default function WorkspaceControls() {
       return;
     }
 
-    if (!window.confirm('전체 연도 데이터를 가져온 파일로 교체할까요? 현재 저장된 다른 연도 데이터도 덮어써질 수 있습니다.')) {
+    if (!window.confirm('전체 연도 데이터를 가져온 파일로 교체할까요? 현재 저장된 다른 연도 데이터도 덮어쓸 수 있습니다.')) {
       return;
     }
 
@@ -135,6 +176,19 @@ export default function WorkspaceControls() {
       <button type="button" className="small-button" disabled={isBusy} onClick={() => allImportRef.current?.click()}>
         Import All
       </button>
+      {isDesktop ? (
+        <>
+          <button type="button" className="small-button" disabled={isBusy} onClick={handleSaveNow}>
+            Save Now
+          </button>
+          <button type="button" className="small-button" disabled={isBusy} onClick={handleBackupYear}>
+            Backup Year
+          </button>
+          <button type="button" className="small-button" disabled={isBusy} onClick={handleOpenDataDir}>
+            Data Folder
+          </button>
+        </>
+      ) : null}
 
       <input
         ref={yearImportRef}
@@ -151,7 +205,14 @@ export default function WorkspaceControls() {
         onChange={(event) => void handleImportAll(event.target.files?.[0])}
       />
 
-      <span className="workspace-save-state">{isSaving ? 'Saving...' : message}</span>
+      <span className="workspace-save-state">
+        {isSaving ? 'Saving...' : message || (isDesktop ? 'Desktop file storage' : '')}
+      </span>
+      {storageInfo?.dataDirPath ? (
+        <span className="workspace-storage-path" title={storageInfo.dataDirPath}>
+          {storageInfo.dataDirPath}
+        </span>
+      ) : null}
     </div>
   );
 }

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Toodo",
+  "version": "0.2.0",
+  "identifier": "com.mark093k.toodo",
+  "build": {
+    "beforeDevCommand": "npm run dev -- --host 127.0.0.1",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Toodo",
+        "width": 1440,
+        "height": 920,
+        "minWidth": 1080,
+        "minHeight": 680,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi"],
+    "category": "Productivity",
+    "shortDescription": "Local Todo and Gantt manager",
+    "longDescription": "Toodo is a local Todo and Gantt schedule management app with file-based desktop storage."
+  }
+}

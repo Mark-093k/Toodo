@@ -1,20 +1,26 @@
 {
   "name": "toodo",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "build:portable": "tsc && vite build --base=./ --outDir release/Toodo/.vite-build && node scripts/build-portable.mjs",
     "package:portable": "npm run build:portable && node scripts/package-portable.mjs",
+    "tauri": "tauri",
+    "dev:desktop": "tauri dev",
+    "build:desktop": "tauri build",
+    "package:desktop": "tauri build && node scripts/package-desktop.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.11.0",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^6.0.1",

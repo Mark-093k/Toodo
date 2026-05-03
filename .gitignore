@@ -1,6 +1,7 @@
 node_modules/
 dist/
 release/
+src-tauri/target/
 .vite/
 coverage/
 tmp/
@@ -18,3 +19,8 @@ pnpm-debug.log*
 .env
 .env.local
 .env.*.local
+*.pfx
+*.p12
+*.pem
+*.key
+*.cer

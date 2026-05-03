@@ -1,4 +1,4 @@
-name: Portable Release
+name: Release Packages
 
 on:
   push:
@@ -31,16 +31,15 @@ jobs:
       - name: Write release notes
         run: |
           cat > release-notes.md <<'EOF'
-          Toodo 첫 피드백용 프리뷰 버전입니다.
+          Toodo feedback preview release.
 
-          사용 방법:
-          1. Toodo-portable.zip 다운로드
-          2. 압축 해제
-          3. index.html 실행
+          Downloads:
+          - Toodo-portable.zip: no-install HTML version
+          - Toodo-desktop-windows-*.exe/msi: Windows desktop installer, when available
 
-          주의:
-          - 데이터는 브라우저 저장소에 저장됩니다.
-          - 중요한 데이터는 Export 기능으로 백업해주세요.
+          Notes:
+          - Portable data is stored in browser storage. Use Export for backups.
+          - Desktop data is stored as JSON files in the OS app data directory.
           EOF
 
       - name: Create or update GitHub Release
@@ -53,3 +52,47 @@ jobs:
               --notes-file release-notes.md \
               --prerelease
           gh release upload "${GITHUB_REF_NAME}" release/Toodo-portable.zip --clobber
+
+  desktop-windows-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Windows desktop installers
+        run: npm run package:desktop
+
+      - name: Optional Windows signing
+        shell: pwsh
+        env:
+          WINDOWS_CERTIFICATE_PATH: ${{ secrets.WINDOWS_CERTIFICATE_PATH }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
+          WINDOWS_TIMESTAMP_URL: ${{ secrets.WINDOWS_TIMESTAMP_URL }}
+        run: ./scripts/sign-windows.ps1
+
+      - name: Create or update GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$env:GITHUB_REF_NAME" *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create "$env:GITHUB_REF_NAME" --title "Toodo $env:GITHUB_REF_NAME" --notes "Toodo desktop and portable preview release." --prerelease
+          }
+          Get-ChildItem release -Filter "Toodo-desktop-windows-*" | ForEach-Object {
+            gh release upload "$env:GITHUB_REF_NAME" $_.FullName --clobber
+          }

@@ -18,6 +18,7 @@ const parseJson = <T>(raw: string | null): T | null => {
 
 export const localStorageFallback: YearlyStorageDriver = {
   name: 'localStorage',
+  kind: 'browser',
 
   async loadMeta() {
     return parseJson<AppMeta>(window.localStorage.getItem(META_STORAGE_KEY));

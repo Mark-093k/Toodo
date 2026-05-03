@@ -7,6 +7,8 @@ import {
   createYear,
   exportAllYears,
   exportYear,
+  backupYearData,
+  getStorageInfo,
   importAllYears,
   importYear,
   LEFT_PANEL_WIDTH_STORAGE_KEY,
@@ -14,6 +16,7 @@ import {
   loadMeta,
   loadYearData,
   migrateLegacyDataIfNeeded,
+  openDataDir,
   saveMeta,
   saveYearData,
 } from '../storage/appStorage';
@@ -255,6 +258,23 @@ export const workspaceStore = {
   async exportAllYears() {
     await flushPendingSave();
     return exportAllYears();
+  },
+
+  async saveNow() {
+    await flushPendingSave();
+  },
+
+  async getStorageInfo() {
+    return getStorageInfo();
+  },
+
+  async openDataDir() {
+    return openDataDir();
+  },
+
+  async backupCurrentYear() {
+    await flushPendingSave();
+    return backupYearData(snapshot.meta.activeYear);
   },
 
   async importYear(json: string) {

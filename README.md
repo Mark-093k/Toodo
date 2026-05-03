@@ -2,17 +2,41 @@
 
 로컬에서 실행하는 Todo + Gantt 일정 관리 앱입니다.
 
-Toodo는 서버 가입이나 설치 과정 없이 브라우저에서 바로 사용할 수 있는 portable HTML 앱입니다.
+Toodo는 두 가지 방식으로 사용할 수 있습니다.
+
+- **Desktop 버전**: 설치형 앱입니다. 업무 데이터가 브라우저 캐시가 아니라 OS의 로컬 데이터 폴더에 JSON 파일로 저장됩니다.
+- **Portable HTML 버전**: 설치 없이 `index.html`을 더블클릭해서 실행합니다. 데이터는 브라우저 저장소에 저장됩니다.
 
 ## 다운로드
 
-현재 사용자용 파일은 아래에서 받을 수 있습니다.
+현재 피드백용 배포 파일은 아래 Release에서 받을 수 있습니다.
 
-[Toodo portable 다운로드](https://github.com/Mark-093k/Toodo/releases/download/v0.1.0-feedback/Toodo-portable.zip)
+https://github.com/Mark-093k/Toodo/releases/tag/v0.1.0-feedback
 
-## 사용 방법
+직접 다운로드:
 
-1. 위 링크에서 `Toodo-portable.zip`을 다운로드합니다.
+- Portable HTML 버전: [Toodo-portable.zip](https://github.com/Mark-093k/Toodo/releases/download/v0.1.0-feedback/Toodo-portable.zip)
+- Windows Desktop 버전: Release assets의 `Toodo-desktop-windows-...exe` 또는 `...msi` 파일
+
+## Desktop 버전 사용 방법
+
+1. Release에서 Windows Desktop 설치 파일을 다운로드합니다.
+2. 설치 파일을 실행해서 Toodo를 설치합니다.
+3. Toodo를 실행하면 바로 사용할 수 있습니다.
+
+Desktop 버전은 데이터를 로컬 데이터 폴더에 저장합니다.
+
+예상 저장 위치:
+
+- Windows: 사용자 AppData 하위 Toodo 데이터 폴더
+- macOS: Application Support 하위 Toodo 데이터 폴더
+- Linux: XDG data directory 하위 Toodo 데이터 폴더
+
+앱 상단의 `Data Folder` 버튼으로 실제 데이터 폴더를 열 수 있습니다.
+
+## Portable HTML 버전 사용 방법
+
+1. `Toodo-portable.zip`을 다운로드합니다.
 2. 압축을 해제합니다.
 3. 폴더 안의 `index.html`을 더블클릭합니다.
 4. 브라우저에서 앱이 열리면 바로 사용합니다.
@@ -23,14 +47,27 @@ Node.js, npm, 개발환경 설치가 필요 없습니다.
 
 ## 데이터 저장 안내
 
-Toodo는 데이터를 브라우저 저장소에 저장합니다.
+Desktop 버전:
 
-중요:
+- `meta.json`
+- `years/{year}.json`
+- `backups/*.json`
 
+형태로 OS app data directory에 저장됩니다. 브라우저 캐시 삭제와 무관하게 유지됩니다.
+
+Portable HTML 버전:
+
+- 브라우저 IndexedDB 또는 localStorage에 저장됩니다.
 - 브라우저 캐시나 사이트 저장소를 삭제하면 데이터가 사라질 수 있습니다.
 - 중요한 데이터는 앱의 Export 기능으로 백업해주세요.
-- 다른 PC로 옮기려면 기존 PC에서 Export 후 새 PC에서 Import 기능을 사용해주세요.
-- 같은 `index.html` 파일이어도 브라우저나 PC가 바뀌면 저장소가 다르기 때문에 기존 데이터가 자동으로 따라오지 않습니다.
+
+## Portable에서 Desktop으로 데이터 옮기기
+
+1. 기존 Portable Toodo를 엽니다.
+2. `Export All`을 실행해서 전체 데이터 JSON을 저장합니다.
+3. Desktop Toodo를 설치하고 실행합니다.
+4. Desktop Toodo에서 `Import All`로 백업 JSON을 가져옵니다.
+5. 이후 데이터는 Desktop 앱의 로컬 데이터 폴더에 저장됩니다.
 
 ## 주요 기능
 
@@ -42,6 +79,7 @@ Toodo는 데이터를 브라우저 저장소에 저장합니다.
 - 미정 일정 점선 표시
 - 테마 변경
 - 현재 연도 / 전체 연도 Export, Import 백업
+- Desktop 버전 데이터 폴더 열기 및 현재 연도 백업
 
 ## 피드백
 
@@ -52,3 +90,5 @@ https://github.com/Mark-093k/Toodo/issues
 ## 개발자 문서
 
 소스 실행, 빌드, release 생성 방법은 [DEVELOPER.md](./DEVELOPER.md)를 참고해주세요.
+
+코드 서명과 notarization 준비는 [SIGNING.md](./SIGNING.md)를 참고해주세요.

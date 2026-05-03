@@ -1,12 +1,28 @@
 # Toodo Developer Guide
 
-이 문서는 Toodo를 개발하거나 portable release를 생성하는 개발자용 안내입니다.
+이 문서는 Toodo를 개발하거나 portable/desktop release를 생성하는 개발자용 안내입니다.
 
 ## 개발 환경
+
+공통:
 
 - Node.js 20 이상 권장
 - npm
 - Chrome 또는 Edge
+
+Desktop 빌드:
+
+- Rust stable toolchain
+- Tauri 2.x CLI (`@tauri-apps/cli`)
+- Windows installer 빌드 시 Windows 환경 권장
+
+현재 npm 패키지:
+
+- `@tauri-apps/api`
+- `@tauri-apps/cli`
+- React
+- Vite
+- TypeScript
 
 ## 설치
 
@@ -14,21 +30,25 @@
 npm install
 ```
 
-## 개발 서버 실행
+## 브라우저 개발 서버
 
 ```bash
 npm run dev
 ```
 
-Vite가 안내하는 로컬 주소를 브라우저에서 열면 됩니다.
+## Desktop 개발 실행
 
-## 프로덕션 빌드
+```bash
+npm run dev:desktop
+```
+
+Tauri가 Vite dev server를 실행하고 desktop WebView를 띄웁니다.
+
+## 브라우저 프로덕션 빌드
 
 ```bash
 npm run build
 ```
-
-TypeScript 검사 후 Vite production build를 생성합니다.
 
 ## Portable HTML 빌드
 
@@ -44,8 +64,6 @@ release/
     index.html
     README_USER.txt
 ```
-
-`index.html`은 JS/CSS가 인라인된 단일 HTML 파일이며 `file://` 환경에서 실행되도록 Vite `base`는 `./`를 사용합니다.
 
 ## Portable zip 생성
 
@@ -68,127 +86,152 @@ Toodo/
   README_USER.txt
 ```
 
-GitHub Release asset에는 `release/Toodo-portable.zip`을 업로드합니다.
+## Desktop installer 빌드
 
-## 프로젝트 구조
+```bash
+npm run build:desktop
+```
+
+Release asset용 파일명으로 복사하려면:
+
+```bash
+npm run package:desktop
+```
+
+결과 예시:
 
 ```text
-src/
-  App.tsx
-  main.tsx
+release/
+  Toodo-desktop-windows-x64-v0.2.0-setup.exe
+  Toodo-desktop-windows-x64-v0.2.0-msi.msi
+```
+
+Rust toolchain이 설치되어 있지 않으면 desktop 빌드는 실패합니다. 일반 사용자는 Rust나 Node.js가 필요하지 않고, Release의 installer만 다운로드하면 됩니다.
+
+## Tauri 구조
+
+```text
+src-tauri/
+  Cargo.toml
+  build.rs
+  tauri.conf.json
+  capabilities/
+    default.json
+  src/
+    main.rs
+```
+
+Tauri 설정:
+
+- `beforeDevCommand`: `npm run dev -- --host 127.0.0.1`
+- `devUrl`: `http://127.0.0.1:5173`
+- `beforeBuildCommand`: `npm run build`
+- `frontendDist`: `../dist`
+- Windows bundle target: `nsis`, `msi`
+
+## Storage adapter 구조
+
+React 컴포넌트는 브라우저 저장소나 Tauri API를 직접 다루지 않습니다.
+
+```text
+src/storage/
+  appStorage.ts
+  indexedDbStorage.ts
+  localStorageFallback.ts
+  desktopFileStorage.ts
   types.ts
-  components/
-    MainTable.tsx
-    TaskRow.tsx
-    GanttView.tsx
-    GanttTimeline.tsx
-    GanttBar.tsx
-    GanttTaskMemoLayer.tsx
-    GanttProjectExclusionLayer.tsx
-    ProjectExclusionModal.tsx
-    ui/
-      ThemeSwitcher.tsx
-  data/
-    sampleTasks.ts
-  hooks/
-    useTheme.ts
-  store/
-    workspaceStore.ts
-    taskStore.ts
-    memoStore.ts
-  storage/
-    appStorage.ts
-    indexedDbStorage.ts
-    localStorageFallback.ts
-  styles/
-    tokens.css
-    themes.css
-    global.css
-  utils/
-    date.ts
-    projectExclusions.ts
-    taskTree.ts
-    theme.ts
 ```
 
-## 저장 구조
+Adapter:
 
-Toodo는 IndexedDB를 우선 사용하고, 사용할 수 없는 환경에서는 localStorage fallback을 사용합니다.
+- Browser: IndexedDB 우선, 실패 시 localStorage fallback
+- Desktop: Tauri command를 통한 JSON file storage
 
-현재 schema version:
+Runtime 감지:
 
-- App meta: `3`
-- Yearly workspace: `3`
+- Tauri runtime이면 `desktopFileStorage`
+- 브라우저/portable이면 `indexedDbStorage` 또는 `localStorageFallback`
 
-localStorage fallback key:
+## Desktop file storage 구조
 
-- `toodo:v2:meta`
-- `toodo:v2:year:{year}`
+Desktop 버전은 OS app data directory 아래에 실제 JSON 파일을 저장합니다.
 
-IndexedDB:
-
-- DB name: `toodo-db-v2`
-- store: `meta`
-- store: `yearlyWorkspaces`
-
-## 연도별 데이터 구조
-
-```ts
-type YearlyWorkspaceData = {
-  schemaVersion: number;
-  year: number;
-  tasks: Task[];
-  taskDailyMemos: TaskDailyMemo[];
-  projectExclusions: ProjectExclusionPeriod[];
-  updatedAt: string;
-};
+```text
+ToodoData/
+  meta.json
+  years/
+    2026.json
+    2027.json
+  backups/
+    2026-20260503-153000.json
 ```
 
-앱 시작 시 active year 데이터만 로드하고, 자동 저장도 현재 active year 데이터만 debounce 저장합니다.
+규칙:
 
-## 주요 데이터 필드
+- 앱 시작 시 `meta.json`을 먼저 로드합니다.
+- active year에 해당하는 `years/{year}.json`만 로드합니다.
+- 연도 전환 시 현재 연도를 저장한 뒤 다음 연도 JSON을 로드합니다.
+- Task, TaskDailyMemo, ProjectExclusion은 현재 active year JSON에만 저장됩니다.
 
-- `Task.scheduleCertainty`: 일정 확정 여부입니다. `fixed` 또는 `tentative` 값을 가집니다.
-- `TaskDailyMemo`: `taskId + date` 기준으로 저장되는 Task별 날짜 메모입니다.
-- `ProjectExclusionPeriod`: 상위 프로젝트 Task에 귀속되는 제외기간입니다.
+## Desktop Tauri commands
 
-## Legacy migration
+`src-tauri/src/main.rs`에 다음 command가 있습니다.
 
-앱 최초 실행 시 기존 legacy storage가 있으면 연도별 구조로 마이그레이션합니다.
+- `ensure_data_dir`
+- `get_data_dir_path`
+- `open_data_dir`
+- `load_meta`
+- `save_meta`
+- `list_years`
+- `load_year_data`
+- `save_year_data`
+- `create_year_data`
+- `delete_year_data`
+- `backup_year_data`
+- `export_year_data`
+- `import_year_data`
 
-- legacy task key: `toodo.tasks.v1`
-- legacy memo key: `gantt:taskDailyMemos`
-- backup key: `toodo:legacyBackup:{timestamp}`
+JSON 저장은 임시 파일에 먼저 쓴 뒤 기존 파일을 교체하는 방식으로 파일 손상 가능성을 줄입니다.
 
-누락 필드는 다음 기본값으로 보정합니다.
+## 데이터 마이그레이션
+
+누락 필드는 앱 storage normalization에서 보정합니다.
 
 - `Task.scheduleCertainty`: `fixed`
 - `YearlyWorkspaceData.projectExclusions`: `[]`
+- `createdAt`: 없으면 `updatedAt` 또는 현재 시각
 
-## GitHub Release 업로드
+Portable에서 Desktop으로 옮길 때는 Portable 앱에서 `Export All` 후 Desktop 앱에서 `Import All`을 사용합니다.
 
-수동 업로드:
+## GitHub Release
+
+수동 portable release:
 
 ```bash
 npm run package:portable
-gh release create v0.1.0-feedback release/Toodo-portable.zip \
-  --title "Toodo v0.1.0 Feedback Preview" \
-  --notes "Toodo 첫 피드백용 프리뷰 버전입니다."
 ```
 
-이미 release가 있다면:
+수동 desktop release:
 
 ```bash
-gh release upload v0.1.0-feedback release/Toodo-portable.zip --clobber
+npm run package:desktop
 ```
 
-## GitHub Actions
+GitHub Actions:
 
-`.github/workflows/release.yml`은 `v*` tag가 push되면 portable zip을 빌드하고 GitHub Release asset으로 업로드합니다.
+`.github/workflows/release.yml`은 `v*` tag가 push되면 다음을 시도합니다.
+
+- Ubuntu에서 portable zip 생성 및 업로드
+- Windows에서 desktop installer 생성 및 업로드
+- signing secret이 없으면 unsigned preview build로 진행
 
 예:
 
 ```bash
-git tag v0.1.0-feedback
-git push origin v0.1.0-feedback
+git tag v0.2.0-desktop-preview
+git push origin v0.2.0-desktop-preview
 ```
+
+## Code signing
+
+Windows/macOS signing 준비는 [SIGNING.md](./SIGNING.md)를 참고하세요.
