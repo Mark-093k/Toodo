@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from 'react';
 import type { ScheduleCertainty, Task, TaskEditableField, TaskPriority, TaskStatus } from '../types';
 import EditableCell from './EditableCell';
 import PriorityBadge from './PriorityBadge';
@@ -10,6 +11,16 @@ type ActiveCell = {
   taskId: string;
   field: TaskEditableField;
 } | null;
+
+type DateEditableField = Extract<TaskEditableField, 'startDate' | 'dueDate'>;
+
+type DateClipboardShortcutHandler = (params: {
+  event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>;
+  task: Task;
+  field: DateEditableField;
+  value: string;
+  setDraft: (value: string) => void;
+}) => void;
 
 type TaskRowProps = {
   task: Task;
@@ -26,6 +37,8 @@ type TaskRowProps = {
   onAddChild: (id: string) => void;
   onDeleteTask: (id: string) => void;
   onOpenProjectSettings: (task: Task) => void;
+  selectedDateCell: ActiveCell;
+  onDateClipboardShortcut?: DateClipboardShortcutHandler;
 };
 
 export default function TaskRow({
@@ -43,11 +56,26 @@ export default function TaskRow({
   onAddChild,
   onDeleteTask,
   onOpenProjectSettings,
+  selectedDateCell,
+  onDateClipboardShortcut,
 }: TaskRowProps) {
   const isActive = (field: TaskEditableField) => activeCell?.taskId === task.id && activeCell.field === field;
+  const isDateSelected = (field: DateEditableField) =>
+    selectedDateCell?.taskId === task.id && selectedDateCell.field === field;
   const setActive = (field: TaskEditableField) => onSetActiveCell({ taskId: task.id, field });
   const clearActive = () => onSetActiveCell(null);
   const navigate = (field: TaskEditableField) => (direction: 1 | -1) => onNavigateCell(task.id, field, direction);
+  const handleDateShortcut = (field: DateEditableField) =>
+    onDateClipboardShortcut
+      ? (event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>, context: { draft: string; setDraft: (value: string) => void }) =>
+          onDateClipboardShortcut({
+            event,
+            task,
+            field,
+            value: context.draft,
+            setDraft: context.setDraft,
+          })
+      : undefined;
 
   return (
     <tr
@@ -141,6 +169,7 @@ export default function TaskRow({
           active={isActive('startDate')}
           inputType="date"
           placeholder="-"
+          className={`date-edit ${isDateSelected('startDate') ? 'is-date-selected' : ''}`}
           onActivate={() => setActive('startDate')}
           onCommit={(startDate) => {
             onUpdateTask(task.id, { startDate });
@@ -148,6 +177,7 @@ export default function TaskRow({
           }}
           onNavigate={navigate('startDate')}
           onCancel={clearActive}
+          onShortcutKeyDown={handleDateShortcut('startDate')}
         />
       </td>
       <td>
@@ -156,6 +186,7 @@ export default function TaskRow({
           active={isActive('dueDate')}
           inputType="date"
           placeholder="-"
+          className={`date-edit ${isDateSelected('dueDate') ? 'is-date-selected' : ''}`}
           onActivate={() => setActive('dueDate')}
           onCommit={(dueDate) => {
             onUpdateTask(task.id, { dueDate });
@@ -163,6 +194,7 @@ export default function TaskRow({
           }}
           onNavigate={navigate('dueDate')}
           onCancel={clearActive}
+          onShortcutKeyDown={handleDateShortcut('dueDate')}
         />
       </td>
       <td>

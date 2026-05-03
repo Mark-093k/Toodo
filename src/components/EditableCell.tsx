@@ -1,5 +1,10 @@
 import { KeyboardEvent, ReactNode, useEffect, useRef, useState } from 'react';
 
+type ShortcutContext<T extends string> = {
+  draft: T;
+  setDraft: (value: T) => void;
+};
+
 type EditableCellProps<T extends string> = {
   value: T;
   active: boolean;
@@ -12,6 +17,10 @@ type EditableCellProps<T extends string> = {
   onCommit: (value: T) => void;
   onNavigate: (direction: 1 | -1) => void;
   onCancel: () => void;
+  onShortcutKeyDown?: (
+    event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>,
+    context: ShortcutContext<T>,
+  ) => void;
 };
 
 export default function EditableCell<T extends string>({
@@ -26,6 +35,7 @@ export default function EditableCell<T extends string>({
   onCommit,
   onNavigate,
   onCancel,
+  onShortcutKeyDown,
 }: EditableCellProps<T>) {
   const [draft, setDraft] = useState<T>(value);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,6 +59,11 @@ export default function EditableCell<T extends string>({
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
+    onShortcutKeyDown?.(event, { draft, setDraft });
+    if (event.defaultPrevented) {
+      return;
+    }
+
     if (event.key === 'Enter') {
       event.preventDefault();
       commit();

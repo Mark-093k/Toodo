@@ -571,6 +571,42 @@ select.cell-editor {
   cursor: pointer;
 }
 
+.editable-cell.date-edit.is-date-selected,
+.cell-editor.date-edit.is-date-selected {
+  border-color: var(--border-focus);
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface-selected));
+  box-shadow:
+    inset 0 0 0 1px var(--border-focus),
+    0 0 0 3px var(--focus-ring);
+}
+
+.table-clipboard-toast {
+  position: fixed;
+  right: var(--space-7);
+  bottom: var(--space-7);
+  z-index: var(--z-tooltip);
+  min-width: 132px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-3) 96%, transparent);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--text-sm);
+  font-weight: 760;
+  text-align: center;
+  animation: tooltip-in var(--transition-fast);
+}
+
+.table-clipboard-toast.success {
+  border-color: var(--success);
+}
+
+.table-clipboard-toast.error {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
 .muted {
   color: var(--text-disabled);
 }
