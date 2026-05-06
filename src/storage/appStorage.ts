@@ -11,7 +11,7 @@ import { THEME_STORAGE_KEY } from '../utils/theme';
 import { desktopFileStorage, isDesktopRuntime } from './desktopFileStorage';
 import { indexedDbStorage } from './indexedDbStorage';
 import { getYearStorageKey, localStorageFallback, META_STORAGE_KEY } from './localStorageFallback';
-import type { YearlyStorageDriver } from './types';
+import type { DesktopDataMigrationCandidate, YearlyStorageDriver } from './types';
 
 export const APP_VERSION = '0.2.4';
 export const APP_SCHEMA_VERSION = 4;
@@ -269,6 +269,89 @@ const createInitialWorkspace = async (driver: YearlyStorageDriver) => {
   return meta;
 };
 
+const formatMigrationYears = (candidate: DesktopDataMigrationCandidate) =>
+  candidate.years.length > 0 ? candidate.years.join(', ') : '연도 파일 없음';
+
+const selectMigrationCandidate = (candidates: DesktopDataMigrationCandidate[]) => {
+  if (candidates.length === 0 || typeof window === 'undefined') {
+    return null;
+  }
+
+  if (candidates.length === 1) {
+    const [candidate] = candidates;
+    const shouldMigrate = window.confirm(
+      [
+        '이전 Toodo 데이터 폴더를 발견했습니다.',
+        '',
+        candidate.label,
+        candidate.path,
+        `meta.json: ${candidate.hasMeta ? '있음' : '없음'}`,
+        `years: ${formatMigrationYears(candidate)}`,
+        '',
+        '새 AppData 데이터 폴더로 복사할까요?',
+        '원본 데이터는 삭제하지 않습니다.',
+      ].join('\n'),
+    );
+    return shouldMigrate ? candidate : null;
+  }
+
+  const choice = window.prompt(
+    [
+      '이전 Toodo 데이터 폴더를 여러 개 발견했습니다.',
+      '새 AppData 데이터 폴더로 복사할 항목 번호를 입력하세요.',
+      '원본 데이터는 삭제하지 않습니다.',
+      '',
+      ...candidates.map((candidate, index) =>
+        [
+          `${index + 1}. ${candidate.label}`,
+          `   ${candidate.path}`,
+          `   meta.json: ${candidate.hasMeta ? '있음' : '없음'}, years: ${formatMigrationYears(candidate)}`,
+        ].join('\n'),
+      ),
+    ].join('\n'),
+  );
+
+  if (!choice) {
+    return null;
+  }
+
+  const index = Number(choice) - 1;
+  return Number.isInteger(index) && candidates[index] ? candidates[index] : null;
+};
+
+const migrateDesktopDataIfNeeded = async (driver: YearlyStorageDriver) => {
+  if (!driver.listDataMigrationCandidates || !driver.migrateDataFromPath) {
+    return null;
+  }
+
+  const candidates = await driver.listDataMigrationCandidates();
+  const selectedCandidate = selectMigrationCandidate(candidates);
+  if (!selectedCandidate) {
+    return null;
+  }
+
+  await driver.migrateDataFromPath(selectedCandidate.path);
+
+  const migratedMeta = normalizeMeta(await driver.loadMeta());
+  if (migratedMeta) {
+    if (migratedMeta.schemaVersion !== APP_SCHEMA_VERSION) {
+      await driver.saveMeta(migratedMeta);
+    }
+    return migratedMeta;
+  }
+
+  const migratedYears = await driver.listYears();
+  if (migratedYears.length > 0) {
+    const currentYear = getCurrentYear();
+    const activeYear = migratedYears.includes(currentYear) ? currentYear : migratedYears[migratedYears.length - 1];
+    const meta = createMeta(activeYear, migratedYears);
+    await driver.saveMeta(meta);
+    return meta;
+  }
+
+  return null;
+};
+
 const backupLegacyStorage = () => {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const backup = {
@@ -342,6 +425,13 @@ export const migrateLegacyDataIfNeeded = async () => {
       await driver.saveMeta(normalizedExistingMeta);
     }
     return normalizedExistingMeta;
+  }
+
+  if (driver.kind === 'desktop') {
+    const migratedMeta = await migrateDesktopDataIfNeeded(driver);
+    if (migratedMeta) {
+      return migratedMeta;
+    }
   }
 
   const legacyTasks = parseJson<unknown>(window.localStorage.getItem(LEGACY_TASK_STORAGE_KEY));

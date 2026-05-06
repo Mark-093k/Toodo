@@ -1,5 +1,12 @@
 import type { AppMeta, YearlyWorkspaceData } from '../types';
 
+export type DesktopDataMigrationCandidate = {
+  label: string;
+  path: string;
+  hasMeta: boolean;
+  years: number[];
+};
+
 export type YearlyStorageDriver = {
   name: string;
   kind?: 'browser' | 'desktop';
@@ -12,4 +19,6 @@ export type YearlyStorageDriver = {
   getDataDirPath?: () => Promise<string>;
   openDataDir?: () => Promise<void>;
   backupYear?: (year: number) => Promise<string>;
+  listDataMigrationCandidates?: () => Promise<DesktopDataMigrationCandidate[]>;
+  migrateDataFromPath?: (sourcePath: string) => Promise<string>;
 };

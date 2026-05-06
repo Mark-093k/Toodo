@@ -86,10 +86,28 @@ Expected Windows outputs:
 
 ```text
 release/
-  Toodo-desktop-windows-x64-v<version>-setup.exe
-  Toodo-desktop-windows-x64-v<version>-msi.msi
+  Toodo-desktop-windows-x64-v<version>-user-nsis.exe
   README_DESKTOP_USER.txt
 ```
+
+## Windows Installer Policy
+
+Windows desktop preview releases must use the NSIS current-user installer:
+
+```json
+"bundle": {
+  "targets": ["nsis"],
+  "windows": {
+    "nsis": {
+      "installMode": "currentUser"
+    }
+  }
+}
+```
+
+Do not use all-users, per-machine, or `both` install modes as the default release path. Those modes can require administrator rights and may install under `C:\Program Files`.
+
+MSI output is excluded from preview release packaging unless it is explicitly verified to install per-user without elevation. GitHub Release assets should make the user installer clear in the file name, for example `Toodo-desktop-windows-x64-v<version>-user-nsis.exe`.
 
 ## Project Structure
 
@@ -120,18 +138,34 @@ React code should not directly depend on localStorage or Tauri APIs. Use the sto
 
 ## Desktop Data Layout
 
-The desktop app stores data under the OS app data directory:
+The desktop app stores data under the OS user app data directory, not under the install path or executable path. On Windows this must resolve to the user's AppData Local area through the Tauri path API.
 
 ```text
-ToodoData/
+<app-local-data-dir>/
+  data/
+    meta.json
+    years/
+      2026.json
+      2027.json
+    backups/
+```
+
+Typical Windows shape:
+
+```text
+C:\Users\<username>\AppData\Local\<app-identifier>\data\
   meta.json
-  years/
+  years\
     2026.json
     2027.json
-  backups/
+  backups\
 ```
 
 The app loads `meta.json` first, then only the active year file. This keeps startup work small as more years accumulate.
+
+All Tauri file commands must resolve paths from `app.path().app_local_data_dir()` and then append `data`. Do not create `data` under the install folder, `Program Files`, the current working directory, or the executable directory.
+
+On startup, if the new AppData Local `data/meta.json` is missing, the desktop app checks read-only legacy candidates such as an executable-folder `data/` and the old app-data `ToodoData/`. If the user confirms migration, JSON files are copied into the new AppData Local `data/` folder, source files are preserved, and migration backups are written under `data/backups/`.
 
 ## Tauri Commands
 
@@ -139,6 +173,8 @@ Implemented in `src-tauri/src/main.rs`:
 
 - `ensure_data_dir`
 - `get_data_dir_path`
+- `list_data_migration_candidates`
+- `migrate_data_from_path`
 - `open_data_dir`
 - `load_meta`
 - `save_meta`
@@ -153,6 +189,8 @@ Implemented in `src-tauri/src/main.rs`:
 
 Writes use a temporary file and then replace the target JSON file to reduce the chance of partial writes.
 
+Uninstallers must not remove user work data by default. The NSIS installer should remove the installed app files and shortcuts only; data cleanup is a deliberate user action through the Data Folder location or a future explicit reset feature.
+
 ## Release Workflow
 
 The GitHub Actions workflow is in:
@@ -164,7 +202,9 @@ The GitHub Actions workflow is in:
 On tag push, it builds:
 
 - portable zip on Ubuntu
-- Windows desktop installer on Windows
+- Windows desktop current-user NSIS installer on Windows
+
+The Windows job lists both `src-tauri/target/release/bundle` and `release/` outputs so release logs show exactly which installer files were produced.
 
 Create a preview tag:
 

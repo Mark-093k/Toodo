@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, readdir } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -37,12 +37,38 @@ if (bundleFiles.length === 0) {
 }
 
 await mkdir(releaseDir, { recursive: true });
+const existingReleaseFiles = await readdir(releaseDir).catch(() => []);
+await Promise.all(
+  existingReleaseFiles
+    .filter((fileName) => fileName.startsWith('Toodo-desktop-'))
+    .map((fileName) => rm(path.join(releaseDir, fileName), { force: true })),
+);
 await copyFile(path.join(rootDir, 'README_DESKTOP_USER.txt'), path.join(releaseDir, 'README_DESKTOP_USER.txt')).catch(() => {});
+let copiedCount = 0;
 for (const source of bundleFiles) {
   const extension = path.extname(source);
-  const installerKind = extension.toLowerCase() === '.msi' ? 'msi' : extension.toLowerCase() === '.exe' ? 'setup' : extension.slice(1);
+  const lowerExtension = extension.toLowerCase();
+
+  if (platformName === 'windows' && lowerExtension === '.msi') {
+    console.log(`Skipping Windows MSI for preview release: ${source}`);
+    continue;
+  }
+
+  const installerKind =
+    platformName === 'windows' && lowerExtension === '.exe'
+      ? 'user-nsis'
+      : lowerExtension === '.msi'
+        ? 'msi'
+        : lowerExtension === '.exe'
+          ? 'setup'
+          : extension.slice(1);
   const targetName = `Toodo-desktop-${platformName}-${archName}-v${version}-${installerKind}${extension}`;
   const target = path.join(releaseDir, targetName);
   await copyFile(source, target);
+  copiedCount += 1;
   console.log(`Desktop installer copied: ${target}`);
+}
+
+if (copiedCount === 0) {
+  throw new Error(`No releasable desktop installer files were copied from ${bundleDir}`);
 }

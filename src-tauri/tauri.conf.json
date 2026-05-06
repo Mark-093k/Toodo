@@ -27,10 +27,15 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi"],
+    "targets": ["nsis"],
     "icon": ["icons/icon.ico"],
     "category": "Productivity",
     "shortDescription": "Local Todo and Gantt manager",
-    "longDescription": "Toodo is a local Todo and Gantt schedule management app with file-based desktop storage."
+    "longDescription": "Toodo is a local Todo and Gantt schedule management app with file-based desktop storage.",
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
   }
 }

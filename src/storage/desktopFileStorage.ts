@@ -1,5 +1,5 @@
 import type { AppMeta, YearlyWorkspaceData } from '../types';
-import type { YearlyStorageDriver } from './types';
+import type { DesktopDataMigrationCandidate, YearlyStorageDriver } from './types';
 
 type TauriCore = {
   invoke: <T>(command: string, args?: Record<string, unknown>) => Promise<T>;
@@ -62,5 +62,15 @@ export const desktopFileStorage: YearlyStorageDriver = {
   async backupYear(year: number) {
     const { invoke } = await getTauriCore();
     return invoke<string>('backup_year_data', { year });
+  },
+
+  async listDataMigrationCandidates() {
+    const { invoke } = await getTauriCore();
+    return invoke<DesktopDataMigrationCandidate[]>('list_data_migration_candidates');
+  },
+
+  async migrateDataFromPath(sourcePath: string) {
+    const { invoke } = await getTauriCore();
+    return invoke<string>('migrate_data_from_path', { sourcePath });
   },
 };

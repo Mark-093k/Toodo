@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use chrono::Local;
+use serde::Serialize;
 use serde_json::{json, Value};
 use std::collections::BTreeSet;
 use std::fs;
@@ -8,13 +9,23 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use tauri::{AppHandle, Manager};
 
-const DATA_DIR_NAME: &str = "ToodoData";
+const DATA_DIR_NAME: &str = "data";
+const LEGACY_DATA_DIR_NAME: &str = "ToodoData";
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct DataMigrationCandidate {
+    label: String,
+    path: String,
+    has_meta: bool,
+    years: Vec<u32>,
+}
 
 fn data_root(app: &AppHandle) -> Result<PathBuf, String> {
     let base = app
         .path()
-        .app_data_dir()
-        .map_err(|error| format!("Failed to resolve app data directory: {error}"))?;
+        .app_local_data_dir()
+        .map_err(|error| format!("Failed to resolve local app data directory: {error}"))?;
     Ok(base.join(DATA_DIR_NAME))
 }
 
@@ -48,6 +59,123 @@ fn read_json(path: &Path) -> Result<Option<Value>, String> {
 
     let raw = fs::read_to_string(path).map_err(|error| format!("Failed to read {}: {error}", path.display()))?;
     serde_json::from_str(&raw).map(Some).map_err(|error| format!("Invalid JSON in {}: {error}", path.display()))
+}
+
+fn path_key(path: &Path) -> String {
+    path.to_string_lossy().replace('\\', "/").to_ascii_lowercase()
+}
+
+fn collect_years_from_data_dir(path: &Path) -> Result<Vec<u32>, String> {
+    let years_path = path.join("years");
+    if !years_path.is_dir() {
+        return Ok(Vec::new());
+    }
+
+    let mut years = BTreeSet::new();
+    for entry in fs::read_dir(&years_path).map_err(|error| format!("Failed to list {}: {error}", years_path.display()))? {
+        let entry = entry.map_err(|error| format!("Failed to read {} entry: {error}", years_path.display()))?;
+        if entry.path().extension().and_then(|value| value.to_str()) != Some("json") {
+            continue;
+        }
+        if let Some(stem) = entry.path().file_stem().and_then(|value| value.to_str()) {
+            if let Ok(year) = stem.parse::<u32>() {
+                if (1900..=2999).contains(&year) {
+                    years.insert(year);
+                }
+            }
+        }
+    }
+
+    Ok(years.into_iter().collect())
+}
+
+fn data_dir_has_files(path: &Path) -> Result<(bool, Vec<u32>), String> {
+    let has_meta = path.join("meta.json").is_file();
+    let years = collect_years_from_data_dir(path)?;
+    Ok((has_meta, years))
+}
+
+fn add_candidate_path(candidates: &mut Vec<(String, PathBuf)>, label: &str, path: PathBuf) {
+    if !candidates.iter().any(|(_, existing)| path_key(existing) == path_key(&path)) {
+        candidates.push((label.to_string(), path));
+    }
+}
+
+fn legacy_data_candidate_paths(app: &AppHandle) -> Vec<(String, PathBuf)> {
+    let mut candidates = Vec::new();
+
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(exe_dir) = exe_path.parent() {
+            add_candidate_path(&mut candidates, "실행 파일 폴더 data", exe_dir.join(DATA_DIR_NAME));
+            add_candidate_path(&mut candidates, "실행 파일 폴더 ToodoData", exe_dir.join(LEGACY_DATA_DIR_NAME));
+        }
+    }
+
+    if let Ok(app_data_dir) = app.path().app_data_dir() {
+        add_candidate_path(
+            &mut candidates,
+            "기존 앱 데이터 ToodoData",
+            app_data_dir.join(LEGACY_DATA_DIR_NAME),
+        );
+        add_candidate_path(&mut candidates, "기존 앱 데이터 data", app_data_dir.join(DATA_DIR_NAME));
+    }
+
+    if let Ok(local_data_dir) = app.path().app_local_data_dir() {
+        add_candidate_path(
+            &mut candidates,
+            "기존 로컬 앱 데이터 ToodoData",
+            local_data_dir.join(LEGACY_DATA_DIR_NAME),
+        );
+    }
+
+    candidates
+}
+
+fn copy_data_files(source: &Path, target: &Path) -> Result<(), String> {
+    if let Some(parent) = target.parent() {
+        fs::create_dir_all(parent).map_err(|error| format!("Failed to create {}: {error}", parent.display()))?;
+    }
+    fs::create_dir_all(target.join("years")).map_err(|error| format!("Failed to create target years directory: {error}"))?;
+
+    let source_meta = source.join("meta.json");
+    if source_meta.is_file() {
+        fs::copy(&source_meta, target.join("meta.json"))
+            .map_err(|error| format!("Failed to copy {}: {error}", source_meta.display()))?;
+    }
+
+    let source_years = source.join("years");
+    if source_years.is_dir() {
+        for entry in fs::read_dir(&source_years).map_err(|error| format!("Failed to list {}: {error}", source_years.display()))? {
+            let entry = entry.map_err(|error| format!("Failed to read {} entry: {error}", source_years.display()))?;
+            let source_path = entry.path();
+            if source_path.extension().and_then(|value| value.to_str()) != Some("json") {
+                continue;
+            }
+            let Some(file_name) = source_path.file_name() else {
+                continue;
+            };
+            fs::copy(&source_path, target.join("years").join(file_name))
+                .map_err(|error| format!("Failed to copy {}: {error}", source_path.display()))?;
+        }
+    }
+
+    Ok(())
+}
+
+fn backup_data_files(source: &Path, backups_root: &Path, prefix: &str) -> Result<PathBuf, String> {
+    let timestamp = Local::now().format("%Y%m%d-%H%M%S").to_string();
+    let target = backups_root.join(format!("{prefix}-{timestamp}"));
+    fs::create_dir_all(target.join("years")).map_err(|error| format!("Failed to create migration backup: {error}"))?;
+
+    let (has_meta, years) = data_dir_has_files(source)?;
+    if has_meta || !years.is_empty() {
+        copy_data_files(source, &target)?;
+    } else {
+        fs::write(target.join("README.txt"), b"No data files were present before migration.\n")
+            .map_err(|error| format!("Failed to write migration backup marker: {error}"))?;
+    }
+
+    Ok(target)
 }
 
 fn atomic_write_json(path: &Path, value: &Value) -> Result<(), String> {
@@ -115,6 +243,60 @@ fn ensure_data_dir(app: AppHandle) -> Result<String, String> {
 #[tauri::command]
 fn get_data_dir_path(app: AppHandle) -> Result<String, String> {
     ensure_data_dir(app)
+}
+
+#[tauri::command]
+fn list_data_migration_candidates(app: AppHandle) -> Result<Vec<DataMigrationCandidate>, String> {
+    if meta_path(&app)?.is_file() {
+        return Ok(Vec::new());
+    }
+
+    let target = data_root(&app)?;
+    let target_key = path_key(&target);
+    let mut candidates = Vec::new();
+
+    for (label, path) in legacy_data_candidate_paths(&app) {
+        if path_key(&path) == target_key || !path.is_dir() {
+            continue;
+        }
+
+        let (has_meta, years) = data_dir_has_files(&path)?;
+        if has_meta || !years.is_empty() {
+            candidates.push(DataMigrationCandidate {
+                label,
+                path: path.to_string_lossy().to_string(),
+                has_meta,
+                years,
+            });
+        }
+    }
+
+    Ok(candidates)
+}
+
+#[tauri::command]
+fn migrate_data_from_path(app: AppHandle, source_path: String) -> Result<String, String> {
+    let source = PathBuf::from(source_path);
+    if !source.is_dir() {
+        return Err(format!("Migration source does not exist: {}", source.display()));
+    }
+
+    let (has_meta, years) = data_dir_has_files(&source)?;
+    if !has_meta && years.is_empty() {
+        return Err(format!("Migration source has no Toodo data files: {}", source.display()));
+    }
+
+    let target = ensure_dirs(&app)?;
+    if path_key(&source) == path_key(&target) {
+        return Err("Migration source is already the active data directory".to_string());
+    }
+
+    let backups = backups_dir(&app)?;
+    backup_data_files(&target, &backups, "pre-migration-target")?;
+    backup_data_files(&source, &backups, "migrated-source")?;
+    copy_data_files(&source, &target)?;
+
+    Ok(target.to_string_lossy().to_string())
 }
 
 #[tauri::command]
@@ -263,6 +445,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             ensure_data_dir,
             get_data_dir_path,
+            list_data_migration_candidates,
+            migrate_data_from_path,
             open_data_dir,
             load_meta,
             save_meta,
