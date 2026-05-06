@@ -13,7 +13,7 @@ import { indexedDbStorage } from './indexedDbStorage';
 import { getYearStorageKey, localStorageFallback, META_STORAGE_KEY } from './localStorageFallback';
 import type { DesktopDataMigrationCandidate, YearlyStorageDriver } from './types';
 
-export const APP_VERSION = '0.2.4';
+export const APP_VERSION = '0.2.5';
 export const APP_SCHEMA_VERSION = 4;
 export const YEARLY_SCHEMA_VERSION = 4;
 export const LEGACY_TASK_STORAGE_KEY = 'toodo.tasks.v1';

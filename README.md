@@ -13,10 +13,10 @@ Download the latest preview release from GitHub Releases:
 
 https://github.com/Mark-093k/Toodo/releases
 
-Direct preview download names:
+Direct preview downloads:
 
-- Windows desktop user installer: `Toodo-desktop-windows-x64-v<version>-user-nsis.exe`
-- Portable HTML zip: `Toodo-portable.zip`
+- Windows desktop user installer: https://github.com/Mark-093k/Toodo/releases/download/v0.2.5-user-installer-preview/Toodo-desktop-windows-x64-v0.2.5-user-nsis.exe
+- Portable HTML zip: https://github.com/Mark-093k/Toodo/releases/download/v0.2.5-user-installer-preview/Toodo-portable.zip
 
 Use the Windows desktop user installer for normal desktop installs. It is a current-user installer and should not request administrator rights.
 
