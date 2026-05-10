@@ -1258,6 +1258,8 @@ select.cell-editor {
 
 .status-예정 {
   border-color: var(--status-planned-border);
+  border-style: dashed;
+  border-width: 1.5px;
   background: var(--status-planned-bg);
   color: var(--status-planned-text);
 }
