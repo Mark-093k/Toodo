@@ -11,6 +11,8 @@ import { THEME_STORAGE_KEY } from '../utils/theme';
 import { desktopFileStorage, isDesktopRuntime } from './desktopFileStorage';
 import { indexedDbStorage } from './indexedDbStorage';
 import { getYearStorageKey, localStorageFallback, META_STORAGE_KEY } from './localStorageFallback';
+import { isSupabaseConfigured } from '../supabase/client';
+import { supabaseStorage } from './supabaseStorage';
 import type { DesktopDataMigrationCandidate, YearlyStorageDriver } from './types';
 
 export const APP_VERSION = '0.2.5';
@@ -401,6 +403,10 @@ const resolveDriver = async (): Promise<YearlyStorageDriver> => {
   if (isDesktopRuntime()) {
     await desktopFileStorage.getDataDirPath?.();
     return desktopFileStorage;
+  }
+
+  if (isSupabaseConfigured()) {
+    return supabaseStorage;
   }
 
   try {

@@ -9,7 +9,7 @@ export type DesktopDataMigrationCandidate = {
 
 export type YearlyStorageDriver = {
   name: string;
-  kind?: 'browser' | 'desktop';
+  kind?: 'browser' | 'desktop' | 'cloud';
   loadMeta: () => Promise<AppMeta | null>;
   saveMeta: (meta: AppMeta) => Promise<void>;
   listYears: () => Promise<number[]>;

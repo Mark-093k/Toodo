@@ -62,14 +62,16 @@ const cloneYearData = (data: YearlyWorkspaceData): YearlyWorkspaceData => ({
   projectExclusions: (data.projectExclusions ?? []).map((exclusion) => ({ ...exclusion })),
 });
 
-let snapshot: WorkspaceSnapshot = {
+const createInitialSnapshot = (): WorkspaceSnapshot => ({
   isReady: false,
   isYearLoading: false,
   isSaving: false,
   error: null,
   meta: createInitialMeta(),
   data: createEmptyYearData(getCurrentYear()),
-};
+});
+
+let snapshot: WorkspaceSnapshot = createInitialSnapshot();
 
 const listeners = new Set<() => void>();
 let initializePromise: Promise<void> | null = null;
@@ -203,6 +205,17 @@ export const workspaceStore = {
 
   getSnapshot() {
     return snapshot;
+  },
+
+  reset() {
+    if (saveTimer) {
+      window.clearTimeout(saveTimer);
+      saveTimer = null;
+    }
+    initializePromise = null;
+    savePromise = null;
+    snapshot = createInitialSnapshot();
+    emit();
   },
 
   async initialize() {

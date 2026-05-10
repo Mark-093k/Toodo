@@ -4,6 +4,7 @@ Toodo is a local Todo + Gantt schedule manager for project work.
 
 It is available in two formats:
 
+- **Web app**: hosted on Vercel. Data is saved in Supabase after login.
 - **Desktop app**: installed on Windows without administrator rights. Data is saved as JSON files in the user AppData folder, not in browser cache or the install folder.
 - **Portable HTML app**: no installation. Open `index.html` directly in Chrome or Edge. Data is saved in browser storage.
 
@@ -20,7 +21,46 @@ Direct preview downloads:
 
 Use the Windows desktop user installer for normal desktop installs. It is a current-user installer and should not request administrator rights.
 
+## Web App Hosting
+
+The web app is a Vite static build and can be hosted on Vercel.
+
+Vercel project settings:
+
+```text
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+```
+
+Required Vercel environment variables:
+
+```text
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
+```
+
+Run `supabase/toodo_schema.sql` in the Supabase SQL Editor before using the web app.
+
+Web data flow:
+
+```text
+[Browser]      [Vercel Static App]      [Supabase Auth]      [Supabase DB]
+   │                    │                      │                    │
+   ├──sign in──────────→│                      │                    │
+   │                    ├──authenticate───────→│                    │
+   │                    │←────session──────────┤                    │
+   ├──edit task────────→│                      │                    │
+   │                    ├──save workspace──────────────────────────→│
+   │                    │       user_id based RLS                   │
+   │                    │←────────saved─────────────────────────────┤
+```
+
 ## Which Version Should I Use?
+
+Use the **Web app** when you need synced cloud data across browsers or devices.
+
+Web data is stored in Supabase and isolated per authenticated user by Row Level Security policies.
 
 Use the **Desktop app** for real work data.
 

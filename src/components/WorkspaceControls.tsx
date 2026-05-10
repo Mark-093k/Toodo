@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useWorkspaceMeta, useWorkspaceStatus, workspaceStore } from '../store/workspaceStore';
+import { getSupabaseClient } from '../supabase/client';
 
 type StorageInfo = Awaited<ReturnType<typeof workspaceStore.getStorageInfo>>;
 
@@ -30,6 +31,7 @@ export default function WorkspaceControls() {
   const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
   const isBusy = !isReady || isYearLoading;
   const isDesktop = storageInfo?.kind === 'desktop';
+  const isCloud = storageInfo?.kind === 'cloud';
 
   useEffect(() => {
     if (!isReady) {
@@ -98,6 +100,15 @@ export default function WorkspaceControls() {
       setMessage(`백업 생성: ${backupPath}`);
     } catch (error) {
       window.alert(error instanceof Error ? error.message : '백업 생성에 실패했습니다.');
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await workspaceStore.saveNow();
+      await getSupabaseClient().auth.signOut();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : '로그아웃에 실패했습니다.');
     }
   };
 
@@ -189,6 +200,11 @@ export default function WorkspaceControls() {
           </button>
         </>
       ) : null}
+      {isCloud ? (
+        <button type="button" className="small-button" disabled={isBusy} onClick={handleSignOut}>
+          Sign out
+        </button>
+      ) : null}
 
       <input
         ref={yearImportRef}
@@ -206,7 +222,7 @@ export default function WorkspaceControls() {
       />
 
       <span className="workspace-save-state">
-        {isSaving ? 'Saving...' : message || (isDesktop ? 'Desktop file storage' : '')}
+        {isSaving ? 'Saving...' : message || (isDesktop ? 'Desktop file storage' : isCloud ? 'Supabase cloud storage' : '')}
       </span>
       {storageInfo?.dataDirPath ? (
         <span className="workspace-storage-path" title={storageInfo.dataDirPath}>
