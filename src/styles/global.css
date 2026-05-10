@@ -1085,14 +1085,14 @@ main {
 }
 
 .tree-toggle-icon {
-  width: 12px;
-  height: 12px;
+  width: 7px;
+  height: 7px;
 }
 
 .tree-toggle-icon path {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.75;
+  stroke-width: 1.5;
   stroke-linecap: round;
 }
 
