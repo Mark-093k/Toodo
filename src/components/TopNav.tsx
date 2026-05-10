@@ -1,3 +1,4 @@
+import toodoLogoUrl from '../assets/toodo-logo.png';
 import type { ViewMode } from '../types';
 import UserProfileMenu from './UserProfileMenu';
 import WorkspaceControls from './WorkspaceControls';
@@ -12,7 +13,9 @@ export default function TopNav({ activeView, onChangeView }: TopNavProps) {
   return (
     <header className="top-nav">
       <div className="brand">
-        <div className="brand-mark">T</div>
+        <div className="brand-mark">
+          <img src={toodoLogoUrl} alt="" />
+        </div>
         <div>
           <h1>Toodo</h1>
           <p>Local project board</p>

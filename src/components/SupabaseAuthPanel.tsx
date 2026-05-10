@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toodoLogoUrl from '../assets/toodo-logo.png';
 import { getSupabaseClient } from '../supabase/client';
 import ThemeSwitcher from './ui/ThemeSwitcher';
 
@@ -33,7 +34,9 @@ export default function SupabaseAuthPanel({ error }: { error?: string | null }) 
       <section className="auth-panel" aria-label="Supabase login">
         <div className="auth-brand">
           <div className="auth-brand-title">
-            <div className="brand-mark">T</div>
+            <div className="brand-mark">
+              <img src={toodoLogoUrl} alt="" />
+            </div>
             <div>
               <h1>Toodo</h1>
               <p>Cloud workspace</p>

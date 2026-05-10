@@ -117,6 +117,7 @@ button:disabled {
   place-items: center;
   width: 34px;
   height: 34px;
+  overflow: hidden;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   background:
@@ -126,6 +127,12 @@ button:disabled {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   font-size: var(--text-lg);
   font-weight: 800;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .brand h1 {
@@ -555,9 +562,8 @@ main {
 
 :root[data-theme="coffeehouse-green"] .brand-mark {
   border-color: #006241;
-  border-radius: 50%;
-  background: #006241;
-  color: #ffffff;
+  border-radius: 12px;
+  background: transparent;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.24), 0 8px 12px rgba(0, 0, 0, 0.14);
 }
 
