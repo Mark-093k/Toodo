@@ -1051,17 +1051,17 @@ main {
 .title-stack {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   min-width: 0;
   height: 100%;
 }
 
 .tree-toggle {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   margin-left: var(--space-2);
   border-color: color-mix(in srgb, var(--accent) 30%, var(--border-strong));
-  border-radius: 10px;
+  border-radius: 7px;
   background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface-1));
   color: var(--accent-hover);
   opacity: 0.7;
@@ -1081,7 +1081,7 @@ main {
   outline: none;
   border-color: var(--border-focus);
   opacity: 1;
-  box-shadow: 0 0 0 3px var(--focus-ring), var(--shadow-md);
+  box-shadow: 0 0 0 2px var(--focus-ring), var(--shadow-md);
 }
 
 .tree-toggle-icon {
