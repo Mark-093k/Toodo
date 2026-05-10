@@ -539,8 +539,13 @@ main {
   border: 1px solid var(--border-subtle);
   border-radius: 50%;
   background: var(--surface-1);
-  color: var(--text-primary);
   font-weight: 820;
+}
+
+.google-mark svg {
+  display: block;
+  width: 18px;
+  height: 18px;
 }
 
 .auth-message {
@@ -656,20 +661,6 @@ main {
 
 :root[data-theme="coffeehouse-green"] .auth-brand p {
   opacity: 0.7;
-}
-
-:root[data-theme="coffeehouse-green"] .auth-brand .theme-switcher span {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-:root[data-theme="coffeehouse-green"] .auth-brand .theme-switcher select {
-  border-color: rgba(255, 255, 255, 0.42);
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
-
-:root[data-theme="coffeehouse-green"] .auth-brand .theme-switcher option {
-  color: rgba(0, 0, 0, 0.87);
 }
 
 :root[data-theme="coffeehouse-green"] .google-button {
@@ -799,21 +790,6 @@ main {
 
 :root[data-theme="coffeehouse-night"] .auth-brand p {
   opacity: 0.7;
-}
-
-:root[data-theme="coffeehouse-night"] .auth-brand .theme-switcher span {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-:root[data-theme="coffeehouse-night"] .auth-brand .theme-switcher select {
-  border-color: rgba(255, 255, 255, 0.42);
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
-
-:root[data-theme="coffeehouse-night"] .auth-brand .theme-switcher option {
-  background: #10231c;
-  color: #fffaf0;
 }
 
 :root[data-theme="coffeehouse-night"] .google-button {

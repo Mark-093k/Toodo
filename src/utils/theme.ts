@@ -43,7 +43,7 @@ export const themeOptions: ThemeOption[] = [
 
 const themeIds = new Set<ThemeId>(themeOptions.map((theme) => theme.id));
 
-export const DEFAULT_THEME: ThemeId = 'dark-professional';
+export const DEFAULT_THEME: ThemeId = 'coffeehouse-green';
 
 export const isThemeId = (value: string | null): value is ThemeId => {
   return !!value && themeIds.has(value as ThemeId);

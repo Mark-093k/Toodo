@@ -7,6 +7,7 @@ import { isDesktopRuntime } from './storage/desktopFileStorage';
 import { useWorkspaceStatus, workspaceStore } from './store/workspaceStore';
 import { useSupabaseAuth } from './supabase/useSupabaseAuth';
 import type { ViewMode } from './types';
+import { applyTheme } from './utils/theme';
 
 export default function App() {
   const [activeView, setActiveView] = useState<ViewMode>('table');
@@ -14,6 +15,13 @@ export default function App() {
   const supabaseAuth = useSupabaseAuth();
   const cloudAuthRequired = supabaseAuth.isConfigured && !isDesktopRuntime();
   const sessionUserId = supabaseAuth.session?.user.id ?? null;
+  const showAuthPanel = cloudAuthRequired && !supabaseAuth.isLoading && !sessionUserId;
+
+  useEffect(() => {
+    if (showAuthPanel) {
+      applyTheme('coffeehouse-green');
+    }
+  }, [showAuthPanel]);
 
   useEffect(() => {
     if (supabaseAuth.isLoading) {
@@ -38,7 +46,7 @@ export default function App() {
     );
   }
 
-  if (cloudAuthRequired && !sessionUserId) {
+  if (showAuthPanel) {
     return <SupabaseAuthPanel error={supabaseAuth.error} />;
   }
 
