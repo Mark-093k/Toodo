@@ -268,6 +268,115 @@ button:disabled {
   max-width: 188px;
 }
 
+.user-profile-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.profile-trigger {
+  display: grid;
+  place-items: center;
+  width: var(--control-height-md);
+  height: var(--control-height-md);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 820;
+}
+
+.profile-trigger:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border-strong));
+  background: var(--surface-hover);
+}
+
+.profile-trigger img,
+.profile-summary img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-3));
+  right: 0;
+  z-index: var(--z-popover);
+  width: 280px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface-2) 98%, transparent);
+  box-shadow: var(--shadow-lg);
+  animation: popover-in var(--transition-base);
+}
+
+.profile-summary {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.profile-summary > span,
+.profile-summary > img {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-3);
+  color: var(--text-primary);
+  font-weight: 820;
+}
+
+.profile-summary strong,
+.profile-summary p {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-summary strong {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: 780;
+}
+
+.profile-summary p {
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.profile-dropdown button {
+  width: 100%;
+  height: 42px;
+  padding: 0 var(--space-5);
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 720;
+  text-align: left;
+}
+
+.profile-dropdown button:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
 main {
   padding: var(--space-7) var(--space-8) var(--space-9);
 }

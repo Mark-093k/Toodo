@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { useWorkspaceMeta, useWorkspaceStatus, workspaceStore } from '../store/workspaceStore';
-import { getSupabaseClient } from '../supabase/client';
 
 type StorageInfo = Awaited<ReturnType<typeof workspaceStore.getStorageInfo>>;
 
@@ -103,15 +102,6 @@ export default function WorkspaceControls() {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await workspaceStore.saveNow();
-      await getSupabaseClient().auth.signOut();
-    } catch (error) {
-      window.alert(error instanceof Error ? error.message : '로그아웃에 실패했습니다.');
-    }
-  };
-
   const handleImportYear = async (file?: File) => {
     if (!file) {
       return;
@@ -200,12 +190,6 @@ export default function WorkspaceControls() {
           </button>
         </>
       ) : null}
-      {isCloud ? (
-        <button type="button" className="small-button" disabled={isBusy} onClick={handleSignOut}>
-          Sign out
-        </button>
-      ) : null}
-
       <input
         ref={yearImportRef}
         className="file-input"

@@ -1,4 +1,5 @@
 import type { ViewMode } from '../types';
+import UserProfileMenu from './UserProfileMenu';
 import WorkspaceControls from './WorkspaceControls';
 import ThemeSwitcher from './ui/ThemeSwitcher';
 
@@ -39,6 +40,7 @@ export default function TopNav({ activeView, onChangeView }: TopNavProps) {
           </button>
         </nav>
         <ThemeSwitcher />
+        <UserProfileMenu />
       </div>
     </header>
   );
