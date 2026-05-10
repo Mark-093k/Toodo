@@ -430,10 +430,18 @@ main {
 .auth-brand {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-5);
   padding: var(--space-7);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-2);
+}
+
+.auth-brand-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  min-width: 0;
 }
 
 .auth-brand h1,
@@ -533,6 +541,147 @@ main {
   color: var(--text-muted);
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
+}
+
+:root[data-theme="coffeehouse-green"] body {
+  letter-spacing: -0.01em;
+}
+
+:root[data-theme="coffeehouse-green"] .top-nav {
+  height: 76px;
+  background: color-mix(in srgb, #ffffff 96%, transparent);
+  box-shadow: var(--shadow-sm);
+}
+
+:root[data-theme="coffeehouse-green"] .brand-mark {
+  border-color: #006241;
+  border-radius: 50%;
+  background: #006241;
+  color: #ffffff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.24), 0 8px 12px rgba(0, 0, 0, 0.14);
+}
+
+:root[data-theme="coffeehouse-green"] .brand h1,
+:root[data-theme="coffeehouse-green"] .panel-toolbar h2 {
+  color: #006241;
+}
+
+:root[data-theme="coffeehouse-green"] .brand p,
+:root[data-theme="coffeehouse-green"] .panel-toolbar p {
+  color: rgba(0, 0, 0, 0.58);
+}
+
+:root[data-theme="coffeehouse-green"] .workspace-panel,
+:root[data-theme="coffeehouse-green"] .auth-panel,
+:root[data-theme="coffeehouse-green"] .profile-dropdown,
+:root[data-theme="coffeehouse-green"] .project-settings-modal {
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+}
+
+:root[data-theme="coffeehouse-green"] .panel-toolbar,
+:root[data-theme="coffeehouse-green"] .project-settings-header,
+:root[data-theme="coffeehouse-green"] .project-settings-actions,
+:root[data-theme="coffeehouse-green"] .task-table th,
+:root[data-theme="coffeehouse-green"] .gantt-left-header,
+:root[data-theme="coffeehouse-green"] .gantt-week-header,
+:root[data-theme="coffeehouse-green"] .gantt-day-header {
+  background: #edebe9;
+}
+
+:root[data-theme="coffeehouse-green"] .primary-button,
+:root[data-theme="coffeehouse-green"] .small-button,
+:root[data-theme="coffeehouse-green"] .icon-text-button,
+:root[data-theme="coffeehouse-green"] .google-button {
+  border-radius: 50px;
+}
+
+:root[data-theme="coffeehouse-green"] .primary-button {
+  border-color: #00754a;
+  background: #00754a;
+  color: #ffffff;
+}
+
+:root[data-theme="coffeehouse-green"] .small-button,
+:root[data-theme="coffeehouse-green"] .icon-text-button {
+  background: transparent;
+  color: #00754a;
+}
+
+:root[data-theme="coffeehouse-green"] .primary-button:active:not(:disabled),
+:root[data-theme="coffeehouse-green"] .small-button:active:not(:disabled),
+:root[data-theme="coffeehouse-green"] .icon-button:active:not(:disabled),
+:root[data-theme="coffeehouse-green"] .icon-text-button:active:not(:disabled),
+:root[data-theme="coffeehouse-green"] .google-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+:root[data-theme="coffeehouse-green"] .view-tabs {
+  border-radius: 50px;
+  background: #ffffff;
+}
+
+:root[data-theme="coffeehouse-green"] .view-tabs button {
+  border-radius: 50px;
+}
+
+:root[data-theme="coffeehouse-green"] .view-tabs button.active {
+  background: #1e3932;
+  color: #ffffff;
+}
+
+:root[data-theme="coffeehouse-green"] .auth-page {
+  background: #f2f0eb;
+}
+
+:root[data-theme="coffeehouse-green"] .auth-panel {
+  background: #ffffff;
+}
+
+:root[data-theme="coffeehouse-green"] .auth-brand {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #1e3932;
+}
+
+:root[data-theme="coffeehouse-green"] .auth-brand h1,
+:root[data-theme="coffeehouse-green"] .auth-brand p {
+  color: #ffffff;
+}
+
+:root[data-theme="coffeehouse-green"] .auth-brand p {
+  opacity: 0.7;
+}
+
+:root[data-theme="coffeehouse-green"] .auth-brand .theme-switcher span {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+:root[data-theme="coffeehouse-green"] .auth-brand .theme-switcher select {
+  border-color: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+:root[data-theme="coffeehouse-green"] .auth-brand .theme-switcher option {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+:root[data-theme="coffeehouse-green"] .google-button {
+  border-color: #00754a;
+  background: #00754a;
+  color: #ffffff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.16), 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme="coffeehouse-green"] .google-button:hover:not(:disabled) {
+  border-color: #006241;
+  background: #006241;
+}
+
+:root[data-theme="coffeehouse-green"] .google-mark {
+  border-color: rgba(255, 255, 255, 0.42);
+  background: #ffffff;
+  color: #006241;
 }
 
 .panel-toolbar {

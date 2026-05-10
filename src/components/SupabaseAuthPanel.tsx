@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getSupabaseClient } from '../supabase/client';
+import ThemeSwitcher from './ui/ThemeSwitcher';
 
 export default function SupabaseAuthPanel({ error }: { error?: string | null }) {
   const [message, setMessage] = useState(error ?? '');
@@ -31,11 +32,14 @@ export default function SupabaseAuthPanel({ error }: { error?: string | null }) 
     <main className="auth-page">
       <section className="auth-panel" aria-label="Supabase login">
         <div className="auth-brand">
-          <div className="brand-mark">T</div>
-          <div>
-            <h1>Toodo</h1>
-            <p>Cloud workspace</p>
+          <div className="auth-brand-title">
+            <div className="brand-mark">T</div>
+            <div>
+              <h1>Toodo</h1>
+              <p>Cloud workspace</p>
+            </div>
           </div>
+          <ThemeSwitcher />
         </div>
 
         <div className="auth-form">

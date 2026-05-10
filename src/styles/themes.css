@@ -236,6 +236,97 @@
   --scrollbar-thumb-hover: rgba(125, 161, 207, 0.52);
 }
 
+:root[data-theme="coffeehouse-green"] {
+  color-scheme: light;
+  --theme-name: "Coffeehouse Green";
+
+  --app-bg: #f2f0eb;
+  --app-bg-accent: linear-gradient(180deg, transparent, transparent);
+  --surface-0: #f2f0eb;
+  --surface-1: #ffffff;
+  --surface-2: #edebe9;
+  --surface-3: #f9f9f9;
+  --surface-hover: #e6f1ed;
+  --surface-active: #d4e9e2;
+  --surface-selected: rgba(0, 117, 74, 0.1);
+  --surface-input: #ffffff;
+
+  --border-subtle: rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.18);
+  --border-focus: #00754a;
+
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: #33433d;
+  --text-muted: rgba(0, 0, 0, 0.58);
+  --text-disabled: rgba(0, 0, 0, 0.36);
+  --text-inverse: #ffffff;
+
+  --accent: #00754a;
+  --accent-hover: #006241;
+  --accent-soft: rgba(0, 117, 74, 0.12);
+  --focus-ring: rgba(0, 117, 74, 0.24);
+
+  --success: #006241;
+  --warning: #cba258;
+  --danger: #c82014;
+  --info: #00754a;
+
+  --status-planned-bg: rgba(0, 117, 74, 0.1);
+  --status-planned-text: #006241;
+  --status-planned-border: rgba(0, 98, 65, 0.26);
+  --status-active-bg: rgba(203, 162, 88, 0.18);
+  --status-active-text: #72511c;
+  --status-active-border: rgba(203, 162, 88, 0.42);
+  --status-done-bg: rgba(212, 233, 226, 0.72);
+  --status-done-text: #1e3932;
+  --status-done-border: rgba(0, 98, 65, 0.25);
+
+  --priority-high-bg: #1e3932;
+  --priority-high-text: #ffffff;
+  --priority-high-border: rgba(30, 57, 50, 0.44);
+  --priority-medium-bg: #d4e9e2;
+  --priority-medium-text: #1e3932;
+  --priority-medium-border: rgba(0, 98, 65, 0.2);
+  --priority-low-bg: #faf6ee;
+  --priority-low-text: #72511c;
+  --priority-low-border: rgba(203, 162, 88, 0.34);
+
+  --gantt-grid-line: rgba(0, 0, 0, 0.09);
+  --gantt-weekend: rgba(0, 98, 65, 0.045);
+  --today-highlight: rgba(203, 162, 88, 0.18);
+  --today-line: rgba(203, 162, 88, 0.72);
+  --today-text: #72511c;
+  --memo-bg: rgba(250, 246, 238, 0.98);
+  --memo-bg-hover: rgba(223, 196, 157, 0.5);
+  --memo-border: rgba(203, 162, 88, 0.58);
+  --memo-text: #72511c;
+  --exclusion-yellow-bg: rgba(203, 162, 88, 0.18);
+  --exclusion-yellow-line: rgba(203, 162, 88, 0.36);
+  --exclusion-blue-bg: rgba(0, 117, 74, 0.08);
+  --exclusion-blue-line: rgba(0, 117, 74, 0.24);
+  --exclusion-gray-bg: rgba(0, 0, 0, 0.055);
+  --exclusion-gray-line: rgba(0, 0, 0, 0.16);
+  --exclusion-red-bg: rgba(200, 32, 20, 0.075);
+  --exclusion-red-line: rgba(200, 32, 20, 0.24);
+
+  --scrollbar-track: rgba(0, 0, 0, 0.06);
+  --scrollbar-thumb: rgba(30, 57, 50, 0.3);
+  --scrollbar-thumb-hover: rgba(30, 57, 50, 0.48);
+
+  --radius-sm: 50px;
+  --radius-md: 12px;
+  --radius-lg: 12px;
+  --control-height-xs: 28px;
+  --control-height-sm: 32px;
+  --control-height-md: 36px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 2px 2px rgba(0, 0, 0, 0.06),
+    0 0 2px rgba(0, 0, 0, 0.07);
+  --shadow-md: 0 0 0.5px rgba(0, 0, 0, 0.14), 0 1px 1px rgba(0, 0, 0, 0.24);
+  --shadow-lg: 0 0 6px rgba(0, 0, 0, 0.24), 0 8px 12px rgba(0, 0, 0, 0.14);
+  --transition-fast: 200ms ease;
+  --transition-base: 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
 :root {
   --bg: var(--app-bg);
   --panel: var(--surface-1);
