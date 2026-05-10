@@ -641,6 +641,19 @@ main {
   color: #ffffff;
 }
 
+:root[data-theme="coffeehouse-green"] .tree-toggle {
+  border-color: rgba(203, 162, 88, 0.48);
+  background: #faf6ee;
+  color: #006241;
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.14), 0 1px 1px rgba(0, 0, 0, 0.18);
+}
+
+:root[data-theme="coffeehouse-green"] .tree-toggle:hover:not(:disabled) {
+  border-color: #cba258;
+  background: #d4e9e2;
+  color: #1e3932;
+}
+
 :root[data-theme="coffeehouse-green"] .auth-page {
   background: #f2f0eb;
 }
@@ -768,6 +781,19 @@ main {
 :root[data-theme="coffeehouse-night"] .view-tabs button.active {
   background: #00a862;
   color: #07110d;
+}
+
+:root[data-theme="coffeehouse-night"] .tree-toggle {
+  border-color: rgba(203, 162, 88, 0.42);
+  background: #1e3932;
+  color: #d4e9e2;
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.32);
+}
+
+:root[data-theme="coffeehouse-night"] .tree-toggle:hover:not(:disabled) {
+  border-color: #cba258;
+  background: #2b5148;
+  color: #fffaf0;
 }
 
 :root[data-theme="coffeehouse-night"] .auth-page {
@@ -1025,8 +1051,46 @@ main {
 .title-stack {
   display: flex;
   align-items: center;
+  gap: var(--space-3);
   min-width: 0;
   height: 100%;
+}
+
+.tree-toggle {
+  width: 30px;
+  height: 30px;
+  margin-left: var(--space-2);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border-strong));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface-1));
+  color: var(--accent-hover);
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast),
+    color var(--transition-fast), transform var(--transition-fast);
+}
+
+.tree-toggle:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent) 62%, var(--border-strong));
+  background: color-mix(in srgb, var(--accent-soft) 86%, var(--surface-hover));
+  color: var(--accent-hover);
+}
+
+.tree-toggle:focus-visible {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--focus-ring), var(--shadow-md);
+}
+
+.tree-toggle-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.tree-toggle-icon path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
 }
 
 .tree-toggle.hidden-toggle {

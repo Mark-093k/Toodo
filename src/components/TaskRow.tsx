@@ -100,7 +100,10 @@ export default function TaskRow({
             aria-label={task.collapsed ? '하위 아이템 펼치기' : '하위 아이템 접기'}
             disabled={!hasChildren}
           >
-            {task.collapsed ? '▸' : '▾'}
+            <svg className="tree-toggle-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M4 8h8" />
+              {task.collapsed ? <path d="M8 4v8" /> : null}
+            </svg>
           </button>
           <EditableCell
             value={task.title}
