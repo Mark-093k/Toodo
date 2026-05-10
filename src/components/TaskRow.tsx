@@ -1,5 +1,5 @@
-import type { KeyboardEvent } from 'react';
-import type { ScheduleCertainty, Task, TaskEditableField, TaskPriority, TaskStatus } from '../types';
+import type { DragEvent, KeyboardEvent } from 'react';
+import type { ScheduleCertainty, Task, TaskDropPosition, TaskEditableField, TaskPriority, TaskStatus } from '../types';
 import EditableCell from './EditableCell';
 import PriorityBadge from './PriorityBadge';
 import StatusBadge from './StatusBadge';
@@ -39,6 +39,12 @@ type TaskRowProps = {
   onOpenProjectSettings: (task: Task) => void;
   selectedDateCell: ActiveCell;
   onDateClipboardShortcut?: DateClipboardShortcutHandler;
+  isDragging: boolean;
+  dropPosition: TaskDropPosition | null;
+  onDragStart: (taskId: string, event: DragEvent<HTMLButtonElement>) => void;
+  onDragOver: (taskId: string, event: DragEvent<HTMLTableRowElement>) => void;
+  onDrop: (taskId: string, event: DragEvent<HTMLTableRowElement>) => void;
+  onDragEnd: () => void;
 };
 
 export default function TaskRow({
@@ -58,6 +64,12 @@ export default function TaskRow({
   onOpenProjectSettings,
   selectedDateCell,
   onDateClipboardShortcut,
+  isDragging,
+  dropPosition,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
 }: TaskRowProps) {
   const isActive = (field: TaskEditableField) => activeCell?.taskId === task.id && activeCell.field === field;
   const isDateSelected = (field: DateEditableField) =>
@@ -81,7 +93,9 @@ export default function TaskRow({
     <tr
       className={`${depth === 0 ? 'parent-row' : 'child-row'} ${task.checked ? 'checked-row' : ''} ${
         task.scheduleCertainty === 'tentative' ? 'tentative-row' : ''
-      }`}
+      } ${isDragging ? 'is-dragging' : ''} ${dropPosition ? `drop-${dropPosition}` : ''}`}
+      onDragOver={(event) => onDragOver(task.id, event)}
+      onDrop={(event) => onDrop(task.id, event)}
     >
       <td className="checkbox-cell">
         <input
@@ -93,6 +107,24 @@ export default function TaskRow({
       </td>
       <td className="title-cell">
         <div className="title-stack" style={{ paddingLeft: `${depth * 22}px` }}>
+          <button
+            type="button"
+            className="icon-button drag-handle"
+            draggable
+            onDragStart={(event) => onDragStart(task.id, event)}
+            onDragEnd={onDragEnd}
+            aria-label={`${task.title} 위치 이동`}
+            title="위치 이동"
+          >
+            <svg className="drag-handle-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <circle cx="5" cy="4" r="1.15" />
+              <circle cx="11" cy="4" r="1.15" />
+              <circle cx="5" cy="8" r="1.15" />
+              <circle cx="11" cy="8" r="1.15" />
+              <circle cx="5" cy="12" r="1.15" />
+              <circle cx="11" cy="12" r="1.15" />
+            </svg>
+          </button>
           <button
             type="button"
             className={`icon-button tree-toggle ${hasChildren ? '' : 'hidden-toggle'}`}

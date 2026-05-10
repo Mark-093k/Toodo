@@ -4,6 +4,8 @@ export type TaskPriority = '낮음' | '보통' | '높음';
 
 export type ScheduleCertainty = 'fixed' | 'tentative';
 
+export type TaskDropPosition = 'before' | 'inside' | 'after';
+
 export type ProjectExclusionReasonType = 'holiday' | 'client' | 'internal' | 'waiting' | 'etc';
 
 export type ProjectExclusionColor = 'yellow' | 'blue' | 'gray' | 'red';

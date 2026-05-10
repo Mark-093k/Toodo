@@ -1,5 +1,12 @@
 import { useSyncExternalStore } from 'react';
-import type { AppMeta, ProjectExclusionPeriod, Task, TaskDailyMemo, YearlyWorkspaceData } from '../types';
+import type {
+  AppMeta,
+  ProjectExclusionPeriod,
+  Task,
+  TaskDailyMemo,
+  TaskDropPosition,
+  YearlyWorkspaceData,
+} from '../types';
 import { getChildTaskIds } from '../utils/taskTree';
 import {
   APP_SCHEMA_VERSION,
@@ -161,6 +168,8 @@ const getNextOrder = (tasks: Task[], parentId: string | null) => {
   const siblings = tasks.filter((task) => (task.parentId ?? null) === parentId);
   return siblings.reduce((maxOrder, task) => Math.max(maxOrder, task.order), 0) + 1;
 };
+
+const sortTasksByOrder = (a: Task, b: Task) => a.order - b.order || a.title.localeCompare(b.title);
 
 const sortMemos = (memos: TaskDailyMemo[]) =>
   [...memos].sort(
@@ -363,6 +372,75 @@ export const workspaceStore = {
       ...data,
       tasks: data.tasks.map((task) => (task.id === id ? { ...task, collapsed: !task.collapsed } : task)),
     }));
+  },
+
+  moveTask(draggedId: string, targetId: string, position: TaskDropPosition) {
+    setYearData((data) => {
+      if (draggedId === targetId) {
+        return data;
+      }
+
+      const draggedTask = data.tasks.find((task) => task.id === draggedId);
+      const targetTask = data.tasks.find((task) => task.id === targetId);
+
+      if (!draggedTask || !targetTask) {
+        return data;
+      }
+
+      const draggedChildIds = getChildTaskIds(data.tasks, draggedId);
+      if (draggedChildIds.has(targetId)) {
+        return data;
+      }
+
+      const previousParentId = draggedTask.parentId ?? null;
+      const nextParentId = position === 'inside' ? targetTask.id : (targetTask.parentId ?? null);
+
+      const getOrderedSiblings = (parentId: string | null) =>
+        data.tasks
+          .filter((task) => (task.parentId ?? null) === parentId && task.id !== draggedId)
+          .sort(sortTasksByOrder);
+
+      const nextParentSiblings = getOrderedSiblings(nextParentId);
+      const nextOrderedSiblingIds = nextParentSiblings.map((task) => task.id);
+
+      if (position === 'inside') {
+        nextOrderedSiblingIds.push(draggedId);
+      } else {
+        const targetIndex = nextOrderedSiblingIds.indexOf(targetId);
+        if (targetIndex < 0) {
+          return data;
+        }
+
+        nextOrderedSiblingIds.splice(position === 'before' ? targetIndex : targetIndex + 1, 0, draggedId);
+      }
+
+      const orderByTaskId = new Map<string, number>();
+      nextOrderedSiblingIds.forEach((id, index) => orderByTaskId.set(id, index + 1));
+
+      if (previousParentId !== nextParentId) {
+        getOrderedSiblings(previousParentId).forEach((task, index) => {
+          orderByTaskId.set(task.id, index + 1);
+        });
+      }
+
+      return {
+        ...data,
+        tasks: data.tasks.map((task) => {
+          const order = orderByTaskId.get(task.id);
+          const nextTask = task.id === draggedId ? { ...task, parentId: nextParentId } : { ...task };
+
+          if (position === 'inside' && task.id === targetId) {
+            nextTask.collapsed = false;
+          }
+
+          if (order !== undefined) {
+            nextTask.order = order;
+          }
+
+          return nextTask;
+        }),
+      };
+    });
   },
 
   upsertMemo(taskId: string, date: string, content: string) {

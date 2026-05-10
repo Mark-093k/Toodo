@@ -983,6 +983,23 @@ main {
   background: var(--surface-hover);
 }
 
+.task-table tbody tr.is-dragging td {
+  opacity: 0.46;
+}
+
+.task-table tbody tr.drop-before td {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+
+.task-table tbody tr.drop-after td {
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.task-table tbody tr.drop-inside td {
+  background: color-mix(in srgb, var(--surface-selected) 70%, var(--surface-1));
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+
 .parent-row td {
   background: color-mix(in srgb, var(--surface-1) 88%, var(--surface-2));
 }
@@ -1056,10 +1073,42 @@ main {
   height: 100%;
 }
 
+.drag-handle {
+  width: 20px;
+  height: 20px;
+  margin-left: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-disabled);
+  cursor: grab;
+  opacity: 0.76;
+  box-shadow: none;
+}
+
+.drag-handle:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  background: color-mix(in srgb, var(--accent-soft) 56%, transparent);
+  color: var(--accent-hover);
+  opacity: 1;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.drag-handle-icon circle {
+  fill: currentColor;
+}
+
 .tree-toggle {
   width: 20px;
   height: 20px;
-  margin-left: var(--space-2);
+  margin-left: 0;
   border-color: color-mix(in srgb, var(--accent) 30%, var(--border-strong));
   border-radius: 7px;
   background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface-1));

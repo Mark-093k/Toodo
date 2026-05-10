@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { Task } from '../types';
+import type { Task, TaskDropPosition } from '../types';
 import { workspaceStore } from './workspaceStore';
 
 export const taskStore = {
@@ -27,6 +27,10 @@ export const taskStore = {
 
   toggleCollapsed(id: string) {
     workspaceStore.toggleCollapsed(id);
+  },
+
+  moveTask(draggedId: string, targetId: string, position: TaskDropPosition) {
+    workspaceStore.moveTask(draggedId, targetId, position);
   },
 };
 

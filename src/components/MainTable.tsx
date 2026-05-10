@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type DragEvent } from 'react';
 import { isDesktopRuntime } from '../storage/desktopFileStorage';
 import { taskStore, useTasks } from '../store/taskStore';
 import { useCurrentYear, useProjectExclusions } from '../store/workspaceStore';
-import type { Task, TaskEditableField } from '../types';
+import type { Task, TaskDropPosition, TaskEditableField } from '../types';
 import { copyTextToClipboard, readTextFromClipboard } from '../utils/clipboard';
 import { normalizeDateInput } from '../utils/dateInput';
 import { getProjectExclusions } from '../utils/projectExclusions';
-import { buildTaskRows } from '../utils/taskTree';
+import { buildTaskRows, getChildTaskIds } from '../utils/taskTree';
 import ProjectExclusionModal from './ProjectExclusionModal';
 import TaskRow from './TaskRow';
 
@@ -25,7 +25,27 @@ type ClipboardNotice = {
   message: string;
 } | null;
 
+type DropTarget = {
+  taskId: string;
+  position: TaskDropPosition;
+} | null;
+
 const isDateField = (field: TaskEditableField): field is DateEditableField => field === 'startDate' || field === 'dueDate';
+
+const getDropPosition = (event: DragEvent<HTMLTableRowElement>): TaskDropPosition => {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const rowRatio = (event.clientY - rect.top) / rect.height;
+
+  if (rowRatio < 0.3) {
+    return 'before';
+  }
+
+  if (rowRatio > 0.7) {
+    return 'after';
+  }
+
+  return 'inside';
+};
 
 export default function MainTable() {
   const tasks = useTasks();
@@ -37,6 +57,8 @@ export default function MainTable() {
   const [selectedDateCell, setSelectedDateCell] = useState<ActiveCell>(null);
   const [clipboardNotice, setClipboardNotice] = useState<ClipboardNotice>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<DropTarget>(null);
   const selectedProject = useMemo(
     () => tasks.find((task) => task.id === selectedProjectId) ?? null,
     [selectedProjectId, tasks],
@@ -65,6 +87,60 @@ export default function MainTable() {
   const handleAddChild = (parentId: string) => {
     const id = taskStore.addTask(parentId);
     handleSetActiveCell({ taskId: id, field: 'title' });
+  };
+
+  const canDropTask = (draggedId: string, targetId: string) => {
+    if (draggedId === targetId) {
+      return false;
+    }
+
+    return !getChildTaskIds(tasks, draggedId).has(targetId);
+  };
+
+  const handleDragStart = (taskId: string, event: DragEvent<HTMLButtonElement>) => {
+    setDraggedTaskId(taskId);
+    setDropTarget(null);
+    handleSetActiveCell(null);
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', taskId);
+  };
+
+  const handleDragOver = (targetId: string, event: DragEvent<HTMLTableRowElement>) => {
+    const currentDraggedTaskId = draggedTaskId || event.dataTransfer.getData('text/plain');
+    if (!currentDraggedTaskId || !canDropTask(currentDraggedTaskId, targetId)) {
+      event.dataTransfer.dropEffect = 'none';
+      setDropTarget(null);
+      return;
+    }
+
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+
+    const position = getDropPosition(event);
+    setDropTarget((currentTarget) =>
+      currentTarget?.taskId === targetId && currentTarget.position === position
+        ? currentTarget
+        : { taskId: targetId, position },
+    );
+  };
+
+  const handleDrop = (targetId: string, event: DragEvent<HTMLTableRowElement>) => {
+    const currentDraggedTaskId = draggedTaskId || event.dataTransfer.getData('text/plain');
+    if (!currentDraggedTaskId || !canDropTask(currentDraggedTaskId, targetId)) {
+      setDropTarget(null);
+      setDraggedTaskId(null);
+      return;
+    }
+
+    event.preventDefault();
+    taskStore.moveTask(currentDraggedTaskId, targetId, getDropPosition(event));
+    setDropTarget(null);
+    setDraggedTaskId(null);
+  };
+
+  const handleDragEnd = () => {
+    setDropTarget(null);
+    setDraggedTaskId(null);
   };
 
   const handleNavigateCell = (taskId: string, field: TaskEditableField, direction: 1 | -1) => {
@@ -183,25 +259,31 @@ export default function MainTable() {
               const projectExclusionCount = isProject ? getProjectExclusions(task.id, projectExclusions).length : 0;
 
               return (
-              <TaskRow
-                key={task.id}
-                task={task}
-                depth={depth}
-                hasChildren={hasChildren}
-                isProject={isProject}
-                projectExclusionCount={projectExclusionCount}
-                activeCell={activeCell}
-                selectedDateCell={selectedDateCell}
-                onSetActiveCell={handleSetActiveCell}
-                onNavigateCell={handleNavigateCell}
-                onUpdateTask={taskStore.updateTask}
-                onToggleChecked={taskStore.toggleChecked}
-                onToggleCollapsed={taskStore.toggleCollapsed}
-                onAddChild={handleAddChild}
-                onDeleteTask={taskStore.deleteTask}
-                onOpenProjectSettings={(project: Task) => setSelectedProjectId(project.id)}
-                onDateClipboardShortcut={handleDateClipboardShortcut}
-              />
+                <TaskRow
+                  key={task.id}
+                  task={task}
+                  depth={depth}
+                  hasChildren={hasChildren}
+                  isProject={isProject}
+                  projectExclusionCount={projectExclusionCount}
+                  activeCell={activeCell}
+                  selectedDateCell={selectedDateCell}
+                  isDragging={draggedTaskId === task.id}
+                  dropPosition={dropTarget?.taskId === task.id ? dropTarget.position : null}
+                  onSetActiveCell={handleSetActiveCell}
+                  onNavigateCell={handleNavigateCell}
+                  onUpdateTask={taskStore.updateTask}
+                  onToggleChecked={taskStore.toggleChecked}
+                  onToggleCollapsed={taskStore.toggleCollapsed}
+                  onAddChild={handleAddChild}
+                  onDeleteTask={taskStore.deleteTask}
+                  onOpenProjectSettings={(project: Task) => setSelectedProjectId(project.id)}
+                  onDateClipboardShortcut={handleDateClipboardShortcut}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  onDragEnd={handleDragEnd}
+                />
               );
             })}
           </tbody>
