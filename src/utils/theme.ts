@@ -1,4 +1,9 @@
-export type ThemeId = 'dark-professional' | 'light-professional' | 'midnight-blue' | 'coffeehouse-green';
+export type ThemeId =
+  | 'dark-professional'
+  | 'light-professional'
+  | 'midnight-blue'
+  | 'coffeehouse-green'
+  | 'coffeehouse-night';
 
 export type ThemeOption = {
   id: ThemeId;
@@ -28,6 +33,11 @@ export const themeOptions: ThemeOption[] = [
     id: 'coffeehouse-green',
     label: 'Coffeehouse Green',
     description: '따뜻한 크림 캔버스와 깊은 그린 포인트의 리테일 플래그십 테마',
+  },
+  {
+    id: 'coffeehouse-night',
+    label: 'Coffeehouse Night',
+    description: '딥 그린 표면과 크림 텍스트, 골드 포인트를 쓰는 커피하우스 다크 테마',
   },
 ];
 
