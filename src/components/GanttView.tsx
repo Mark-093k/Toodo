@@ -1,5 +1,5 @@
 import { type PointerEvent as ReactPointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTasks } from '../store/taskStore';
+import { taskStore, useTasks } from '../store/taskStore';
 import { buildTaskRows } from '../utils/taskTree';
 import GanttTimeline from './GanttTimeline';
 
@@ -120,6 +120,7 @@ export default function GanttView() {
         rows={rows}
         leftPanelWidth={leftPanelWidth}
         isLeftPanelResizing={isResizing}
+        onToggleCollapsed={taskStore.toggleCollapsed}
         onLeftPanelResizeStart={handleResizeStart}
         onLeftPanelResizeReset={handleResizeReset}
       />

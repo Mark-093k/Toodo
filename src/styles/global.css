@@ -1448,7 +1448,12 @@ select.cell-editor {
   white-space: nowrap;
 }
 
+.gantt-tree-toggle {
+  flex: 0 0 20px;
+}
+
 .gantt-task-title-text {
+  flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

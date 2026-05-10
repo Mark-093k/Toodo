@@ -45,6 +45,7 @@ type GanttTimelineProps = {
   rows: TaskRowModel[];
   leftPanelWidth: number;
   isLeftPanelResizing: boolean;
+  onToggleCollapsed: (id: string) => void;
   onLeftPanelResizeStart: (event: ReactPointerEvent<HTMLButtonElement>) => void;
   onLeftPanelResizeReset: () => void;
 };
@@ -106,6 +107,7 @@ export default function GanttTimeline({
   rows,
   leftPanelWidth,
   isLeftPanelResizing,
+  onToggleCollapsed,
   onLeftPanelResizeStart,
   onLeftPanelResizeReset,
 }: GanttTimelineProps) {
@@ -208,7 +210,7 @@ export default function GanttTimeline({
           <span>상태 / 기간</span>
         </div>
         <div className="gantt-left-rows">
-          {rows.map(({ task, depth }) => {
+          {rows.map(({ task, depth, hasChildren }) => {
             const rowExclusions = getProjectExclusions(task.id, projectExclusions);
 
             return (
@@ -221,6 +223,19 @@ export default function GanttTimeline({
                     } as CSSProperties
                   }
                 >
+                  <button
+                    type="button"
+                    className={`icon-button tree-toggle gantt-tree-toggle ${hasChildren ? '' : 'hidden-toggle'}`}
+                    onClick={() => hasChildren && onToggleCollapsed(task.id)}
+                    aria-label={task.collapsed ? '하위 Task 펼치기' : '하위 Task 접기'}
+                    aria-expanded={hasChildren ? !task.collapsed : undefined}
+                    disabled={!hasChildren}
+                  >
+                    <svg className="tree-toggle-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                      <path d="M4 8h8" />
+                      {task.collapsed ? <path d="M8 4v8" /> : null}
+                    </svg>
+                  </button>
                   <span className="gantt-task-title-text">{task.title}</span>
                   {task.scheduleCertainty === 'tentative' ? <span className="gantt-certainty-badge">미정</span> : null}
                   {rowExclusions.length > 0 ? (
