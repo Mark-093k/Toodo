@@ -42,6 +42,8 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
 
 Run `supabase/toodo_schema.sql` in the Supabase SQL Editor before using the web app.
 
+For Google login, enable the Google provider in Supabase Auth and add the Supabase callback URL to the Google OAuth client.
+
 Web data flow:
 
 ```text

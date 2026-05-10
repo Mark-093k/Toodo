@@ -43,6 +43,28 @@ export default function SupabaseAuthPanel({ error }: { error?: string | null }) 
     void submit('sign-in');
   };
 
+  const handleGoogleSignIn = async () => {
+    setIsSubmitting(true);
+    setMessage('');
+
+    try {
+      const { error } = await getSupabaseClient().auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+
+      if (error) {
+        setMessage(error.message);
+      }
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Google 로그인 처리 중 오류가 발생했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="auth-page">
       <section className="auth-panel" aria-label="Supabase login">
@@ -84,6 +106,10 @@ export default function SupabaseAuthPanel({ error }: { error?: string | null }) 
               Sign up
             </button>
           </div>
+
+          <button type="button" className="google-button" disabled={isSubmitting} onClick={handleGoogleSignIn}>
+            Continue with Google
+          </button>
 
           {message ? <p className="auth-message">{message}</p> : null}
         </form>
